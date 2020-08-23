@@ -1,10 +1,11 @@
-import React, { useReducer } from 'react';
-
+import React from 'react';
 import Head from 'next/head';
+
+import { parseCookies, getUserFromCookie } from '../helpers/server';
 
 import '../styles/App.css';
 
-const MyApp = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps, user }) => {
   return (
     <>
       <Head>
@@ -31,9 +32,28 @@ const MyApp = ({ Component, pageProps }) => {
         <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
       </Head>
-      <Component {...pageProps} />
+      <Component {...pageProps} user={user} />
     </>
   )
+};
+
+function isAllowed(user, pathname) {
+  if (pathname.includes('admin')) return user && user.isAdmin;
+  return true;
+}
+
+MyApp.getInitialProps = async ({ ctx: req }) => {
+  const cookies = parseCookies(req.req);
+  const user = cookies ? await getUserFromCookie(cookies) : false;
+
+  if (!isAllowed(user, req.pathname)) {
+    req.res.writeHead(302, { Location: '/' });
+    return req.res.end();
+  }
+
+  return {
+    user,
+  }
 };
 
 export default MyApp;

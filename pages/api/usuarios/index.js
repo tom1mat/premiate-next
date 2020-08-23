@@ -41,7 +41,8 @@ const get = async (req, res) => {
 //app.post('/createAccountFromGoogle', async (req, res) => {
 //app.post('/createAccount', async (req, res) => {
 const post = async (req, res) => {
-  if (google) {
+  const { origen } = req.query;
+  if (origen === 'google') {
     const { email, name, surname, googleData } = req.body;
 
     const data = {
@@ -63,11 +64,11 @@ const post = async (req, res) => {
         googleData: data.googleData,
       });
     } else {
-      res.status(204).send();
+      res.status(204).end();
     }
   } else {
     // QUEDA PENDIENTE INVESTIGAR COMO MANTENER LA SESION INICIADA SIN GOOGLE!!!
-    // NODE SESSIONS.
+    // COOKIES!!.
     const { email, password } = req.body;
     const hash = await generateHash(password);
 
@@ -87,7 +88,7 @@ const post = async (req, res) => {
         credits: data.credits,
       });
     } else {
-      return res.status(204).send();
+      return res.status(204).end();
     }
   }
 }

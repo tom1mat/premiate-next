@@ -16,7 +16,7 @@ class Sorteo extends React.PureComponent {
       sorteoId: this.props.id,
       email: this.props.userData.email
     });
-    const res = await fetch(`${__API_URL}/suscribeToSorteo`, {
+    const res = await fetch(`${__API_URL}/sorteos/suscribe`, {
       method: 'POST',
       body,
       headers: {
@@ -33,7 +33,7 @@ class Sorteo extends React.PureComponent {
         message: 'Te has suscripto exitosamente!',
       });
     } else {
-      notification.success({
+      notification.error({
         placement: 'bottomRight',
         message: 'No te has podido subscribir en este momento, inténtalo de nuevo más tarde',
       });
@@ -46,7 +46,7 @@ class Sorteo extends React.PureComponent {
       sorteoId: this.props.id,
       email: this.props.userData.email,
     });
-    const res = await fetch(`${__API_URL}/unSuscribeToSorteo`, {
+    const res = await fetch(`${__API_URL}/sorteos/unsuscribe`, {
       method: 'POST',
       body,
       headers: {

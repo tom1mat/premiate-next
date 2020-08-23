@@ -1,6 +1,7 @@
-import jwt from'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
-import { __JWTKEY } from '../config/server';
+const { __JWTKEY } = require('../config/server');
+// import { __JWTKEY } from '../config/server';
 
 const getRoute = (url) => {
   let paths = url.split('/');
@@ -8,7 +9,8 @@ const getRoute = (url) => {
 }
 
 const useProtected = async (req, res) => {
-  const protectedRoutes = ['raiseSubasta', 'updateSorteo', 'updateUser', 'unSuscribeToSorteo', 'suscribeToSorteo'];
+  //TODO: no se esta validando updateSorteo y updateUser
+  const protectedRoutes = ['raise', 'unSuscribeToSorteo', 'suscribeToSorteo', 'update-sockets'];
   const route = getRoute(req.url);
   if (protectedRoutes.includes(route)) {
     return new Promise((resolve) => {
@@ -24,4 +26,4 @@ const useProtected = async (req, res) => {
   }
 };
 
-export default useProtected;
+module.exports = useProtected;

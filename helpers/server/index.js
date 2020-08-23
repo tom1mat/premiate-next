@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken';
+import cookie from 'cookie';
+
 import { __JWTKEY } from '../../config/server';
 
-const getJwtToken = async (email) => {
+const getJwtToken = async (data) => {
   return await new Promise((resolve, reject) => {
-    jwt.sign({ email }, __JWTKEY, {}, async (err, jwtToken) => {
+    jwt.sign(data, __JWTKEY, {}, async (err, jwtToken) => {
       if (err) {
         return reject(err);
       } else {
@@ -26,6 +28,18 @@ const generateHash = password => (new Promise(
   })
 );
 
+export const getUserFromCookie = (cookies) => {
+  const { jwtToken } = cookies;
+
+  return new Promise((resolve) => {
+    jwt.verify(jwtToken, __JWTKEY, (err, data) => resolve((err || !data) ? null : data));
+  });
+}
+
+export const parseCookies = (req, document) => {
+  return cookie.parse(req ? req.headers.cookie || '' : typeof document === 'undefined' ? '' : document.cookie);
+}
+
 module.exports = {
   dbModels: {
     getModelFromString,
@@ -35,5 +49,7 @@ module.exports = {
     deleteModel,
   },
   getJwtToken,
-  generateHash
+  generateHash,
+  parseCookies,
+  getUserFromCookie
 }

@@ -17,6 +17,7 @@ class Sorteos extends React.PureComponent {
 
   render() {
     const userSorteos = (this.props.userData && this.props.userData.sorteos) ? this.props.userData.sorteos : [];
+
     return (
       <section className="bg-light page-section" id="portfolio">
         <div className="container">

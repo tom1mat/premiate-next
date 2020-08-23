@@ -14,6 +14,8 @@ const {
   generateHash
 } = require('../../../helpers/server');
 
+const { __SOCKETIO_SERVER } = require('../../../config/server');
+
 export default async (req, res) => {
   const { method } = req;
 
@@ -44,11 +46,25 @@ export default async (req, res) => {
     updateModel('subastas', { _id: req.body.id }, subastaData);
     // 2) Update
     updateModel('users', { email }, userData);
+
     // 3) Update in all the fronts
-    io.sockets.emit(`raise-${req.body.id}`, amount, email, name);
+    const params = {
+      method: 'POST',
+      body: JSON.stringify({
+        jwtToken: req.body.jwtToken,
+        id: req.body.id,
+        amount,
+        email,
+        name,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    fetch(`${__SOCKETIO_SERVER}/update-sockets`, params);
+
     res.status(200).send(userData);
   } catch (error) {
     console.error(error);
-    res.status(500).send();
+    res.status(500).end();
   }
 }

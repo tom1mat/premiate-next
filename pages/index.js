@@ -1,7 +1,7 @@
 import PageHome from '../components/pages/home';
 
-export default function Home() {
+export default function Home({ user }) {
   return (
-    <PageHome />
+    <PageHome user={user} />
   )
 }

@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { connect } from 'react-redux';
 import { Card, InputNumber, notification, Button } from 'antd';
 
-import { __API_URL } from '../../../config/client';
+import { __API_URL, __SOCKETIO_SERVER } from '../../../config/client';
 
 import ButtonMercadoPago from '../../commons/ButtonMercadoPago';
 
@@ -20,7 +20,7 @@ class Subasta extends React.PureComponent {
     const subastaDate = new Date(this.props.dateString)
     const secondsDiff = subastaDate.getTime()/1000 - Date.now()/1000;
 
-    if(secondsDiff > 0 ){
+    if (secondsDiff > 0 ){
 
     const daysDecimal = secondsDiff / 60 / 60 / 24;
     const days = Math.trunc(daysDecimal);
@@ -69,7 +69,9 @@ class Subasta extends React.PureComponent {
     }
 
     const _this = this;
-    const socket = io(`${__API_URL}/`);
+
+    const socket = io(__SOCKETIO_SERVER);
+
     socket.on('connect', function () {
       socket.on('updateSubastas', function (subastas) {
         _this.setState({ subastas });
@@ -81,7 +83,6 @@ class Subasta extends React.PureComponent {
             message: `${name || 'Un usuario '} aumentó el importe a ${amount}`,
           });
         }
-
         _this.setState({ amount })
       });
     });
@@ -138,7 +139,7 @@ class Subasta extends React.PureComponent {
       amount: localAmount + amount,
       userAmount: localAmount,
     });
-    const response = await fetch(`${__API_URL}/raiseSubasta`, {
+    const response = await fetch('/api/subastas/raise', {
       method: 'POST',
       body,
       headers: {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import jsCookie from 'js-cookie';
 import { Checkbox, notification } from 'antd';
 
 import { __API_URL } from '../../config/client';
@@ -12,11 +13,12 @@ class LoginButton extends React.PureComponent {
   }
 
   fetchLogIn = async (email, password) => {
-    let url = `${__API_URL}/getUserData?email=${email}`;
+    let url = `${__API_URL}/usuarios/${email}`;
     if (password) url += `&password=${password}`;
     const res = await fetch(url);
     if (res.status === 200) {
       const userData = await res.json();
+      jsCookie.set('jwtToken', userData.jwtToken);
       this.props.setJwtToken(userData.jwtToken);
       this.props.setUserData(userData);
       this.props.setLogIn();
@@ -33,6 +35,7 @@ class LoginButton extends React.PureComponent {
   onHandleGoogleLogIn = () => {
     this.props.auth2.signIn().then(async () => {
       const email = this.props.auth2.currentUser.get().getBasicProfile().getEmail();
+      console.log(email);
       this.fetchLogIn(email);
     });
   }
@@ -40,6 +43,7 @@ class LoginButton extends React.PureComponent {
   onHandleLogOut = () => {
     this.props.auth2.signOut().then(() => {
       this.props.setLogOut();
+      jsCookie.remove('jwtToken');
       removeLocalItem('email');
     });
   }
@@ -59,7 +63,7 @@ class LoginButton extends React.PureComponent {
           name: profile.getGivenName(),
           email: profile.getEmail(),
         });
-        const res = await fetch(`${__API_URL}/createAccountFromGoogle`, {
+        const res = await fetch(`${__API_URL}/usuarios?origen=google`, {
           method: 'POST',
           body,
           headers: {
@@ -97,7 +101,7 @@ class LoginButton extends React.PureComponent {
           email: this.state.createEmail,
           password: this.state.createPassword,
         });
-        const res = await fetch(`${__API_URL}/createAccount`, {
+        const res = await fetch(`${__API_URL}/usuarios`, {
           method: 'POST',
           body,
           headers: {

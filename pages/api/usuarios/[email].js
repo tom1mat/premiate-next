@@ -5,13 +5,9 @@ import useProtected from '../../../middlewares/useProtected';
 const {
   dbModels: {
     getModel,
-    createModel,
     updateModel,
-    getModelFromString,
-    deleteModel,
   },
   getJwtToken,
-  generateHash
 } = require('../../../helpers/server');
 
 export default async (req, res) => {
@@ -35,7 +31,7 @@ export default async (req, res) => {
 
 //app.post('/updateUser', (req, res) => {
 const put = async (req, res) => {
-  const { query: { email: queryEmail }} = req;
+  const { query: { email: queryEmail } } = req;
 
   const { name, surname, email } = req.body;
   let status;
@@ -47,8 +43,10 @@ const put = async (req, res) => {
     status = 500;
   }
 
-  res.status(status).send();
+  res.status(status).end();
 }
+
+const isAdmin = email => ['tomasmateo10@gmail.com'].includes(email);
 
 //app.get('/getUserData', async (req, res) => {
 const get = async (req, res) => {
@@ -56,13 +54,11 @@ const get = async (req, res) => {
     query: { email, password },
   } = req;
 
-  if (!email) return res.status(500).send();
+  if (!email) return res.status(500).end();
 
   const userData = await getModel('users', { email });
 
-  if (!userData) return res.status(404).send();
-
-  const jwtToken = await getJwtToken(email);
+  if (!userData) return res.status(404).end();
 
   const { name, surname, credits, creditsUsed, googleData, sorteos, subastas } = userData;
   if (userData) {
@@ -75,21 +71,26 @@ const get = async (req, res) => {
       googleData,
       sorteos,
       subastas,
-      jwtToken,
     };
 
     if (password) {// Normal Login
-      bcrypt.compare(password, userData.password, function (err, passIsCorrect) {
+      bcrypt.compare(password, userData.password, async (err, passIsCorrect) => {
         if (passIsCorrect) {
+          const admin = isAdmin(email);
+          const jwtToken = await getJwtToken({ email, isAdmin: admin });
+          responseData.jwtToken = jwtToken;
           return res.status(200).send(responseData);
         } else {
-          return res.status(401).send();
+          return res.status(401).end();
         }
       });
     } else {// Google login
+      const admin = isAdmin(email);
+      const jwtToken = await getJwtToken({ email, isAdmin: admin });
+      responseData.jwtToken = jwtToken;
       return res.status(200).send(responseData);
     }
   } else {
-    return res.status(404).send();
+    return res.status(404).end();
   }
 }
