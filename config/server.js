@@ -8,5 +8,5 @@ module.exports = {
   __STARTINGCREDITS: 500,
   __SALTROUNDS: 10,
   __MONGO_CONNECTION,
-  __SOCKETIO_SERVER: 'http://134.122.117.204/:3030',//'http://localhost:3030',
+  __SOCKETIO_SERVER: 'http://134.122.117.204:3030',//'http://localhost:3030',
 }
