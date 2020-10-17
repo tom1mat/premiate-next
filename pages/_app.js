@@ -10,7 +10,7 @@ const MyApp = ({ Component, pageProps, user }) => {
     <>
       <Head>
         <base href="/" />
-        <base href="http://localhost:3000" />
+        {/* <base href="http://localhost:3000" /> */}
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Premiate - nos encanta regalar cosas" />
