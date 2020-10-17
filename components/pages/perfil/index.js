@@ -10,8 +10,8 @@ import Form from './Form'
 import store from '../../store';
 import useAuth2 from '../../hooks/useAuth2';
 
-const PageAdmin = () => {
-  const loading = useAuth2(store);
+const PageAdmin = ({ user }) => {
+  const loading = useAuth2(store, user);
 
   return (
     <Provider store={store}>

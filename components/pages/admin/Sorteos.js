@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 
-import { __API_URL } from '../../../config';
-import { fetchData } from '../../../utils';
+import { __API_URL } from '../../../config/client';
+import { fetchData } from '../../../helpers/client';
 
 const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   const [sorteos, setSorteos] = useState(_sorteos);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    setSorteos(_sorteos);
-  },[_sorteos]);
+  console.log(sorteos);
 
   const updateSorteo = async event => {
     event.preventDefault();
     setLoading(true);
-    const { sorteo, status, _id } = event.target.elements;
-    const params = { sorteo: sorteo.value, status: status.value, _id: _id.value }
-    const data = await fetchData('sorteo', params, 'PUT');
+
+    const formData = new FormData(event.target);
+
+    if (!event.target.image.value) formData.delete('image');
+
+    const config = {
+      method: 'PUT',
+      body: formData,
+      headers: {},
+    };
+
+    const { sorteo: { value: sorteo }, _id: { value: id } } = event.target.elements;
+
+    const data = await fetch(`api/sorteos/${id}`, config);
+    // const { sorteo, status, _id } = event.target.elements;
+    // const params = { sorteo: sorteo.value, status: status.value, _id: _id.value }
+    // const data = await fetchData(`sorteos/${_id.value}`, params, 'PUT');
     const notif = {
       type: 'info',
       message: `El sorteo ${sorteo.value} se ha editado correctamente`
@@ -43,14 +55,17 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
 
     const formData = new FormData(event.target);
 
-    const newSorteo = await fetchData('sorteo', formData, 'POST', 'formData');
+    const newSorteo = await fetchData('sorteos', formData, 'POST', 'formData');
     const notif = {
       type: 'info',
       message: `El sorteo se ha creado correctamente`
     };
-
+    console.log(newSorteo);
     if (newSorteo) {
-      reFetchSorteos();
+      setSorteos([
+        ...sorteos,
+        { _id: newSorteo._id, sorteo: event.target.sorteo.value, status: event.target.status.value }
+      ]);
       event.target.reset();
     } else {
       notif.type = 'warning';
@@ -69,20 +84,24 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   const deleteSorteo = async event => {
     event.persist();
     event.preventDefault();
-    const confirm = window.confirm("Seguro que desea eliminar el sorteo?");
+    const confirm = window.confirm('Seguro que desea eliminar el sorteo?');
 
     if (confirm) {
       setLoading(true);
 
-      const _id = event.target.value;
-      const response = await fetchData('sorteo', { _id }, 'DELETE');
+      const target = event.target;
+      const _id = target.value;
+      const response = await fetchData(`sorteos/${_id}`, { }, 'DELETE');
       const notif = {
         type: 'info',
         message: `El sorteo ha sido eliminado correctamente`
       };
 
+      const form = target.parentNode;
+      form.parentNode.removeChild(form);
+
       if (response) {
-        reFetchSorteos();
+        // reFetchSorteos();
       } else {
         notif.type = 'warning';
         notif.message = `No se pudo eliminar el sorteo ${_id}`;
@@ -124,6 +143,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
                 <option value="FINISHED">FINISHED</option>
               </select>
               <input type="hidden" value={_id} name="_id" />
+              <input type="file" name="image" />
               <button type="submit" disabled={loading}>Editar</button>
               <button value={_id} onClick={deleteSorteo} disabled={loading}>Eliminar</button>
             </form>

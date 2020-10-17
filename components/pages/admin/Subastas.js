@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 
-import { __API_URL } from '../../../config';
-import { fetchData } from '../../../utils';
+import { __API_URL } from '../../../config/client';
+import { fetchData } from '../../../helpers/client';
 
 const STATUS = ["ACTIVE", "INACTIVE", "FINISHED"];
 
@@ -21,7 +21,7 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
 
     const formData = new FormData(event.target);
 
-    const newSorteo = await fetchData('subasta', formData, 'POST', 'formData');
+    const newSorteo = await fetchData('subastas', formData, 'POST', 'formData');
     const notif = {
       type: 'info',
       message: `La subasta se ha creado correctamente`
@@ -48,7 +48,7 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
     event.preventDefault();
     setLoading(true);
     const formData = new FormData(event.target);
-    const data = await fetchData('subasta', formData, 'PUT', 'formData');
+    const data = await fetchData('subastas', formData, 'PUT', 'formData');
     const notif = {
       type: 'info',
       message: `La subasta se ha editado correctamente`
@@ -80,7 +80,7 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
     if (confirm) {
       setLoading(true);
 
-      const response = await fetchData('subasta', { _id }, 'DELETE');
+      const response = await fetchData('subastas', { _id }, 'DELETE');
       const notif = {
         type: 'info',
         message: `La subasta ID: ${_id} ha sido eliminado correctamente`

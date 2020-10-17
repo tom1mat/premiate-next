@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 
-import { fetchData } from '../../../utils';
+import { fetchData } from '../../../helpers/client';
 
 const PageUsuarios = ({ usuarios: _usuarios, reFetchUsuarios }) => {
   const [usuarios, setUsuarios] = useState(_usuarios);

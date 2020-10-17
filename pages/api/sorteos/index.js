@@ -6,11 +6,7 @@ const {
   dbModels: {
     getModel,
     createModel,
-    updateModel,
-    getModelFromString,
-    deleteModel,
   },
-  getJwtToken,
 } = require('../../../helpers/server');
 
 export default async (req, res) => {

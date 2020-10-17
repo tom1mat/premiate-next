@@ -1,0 +1,14 @@
+{
+  "apps": [
+      {
+          "name": "Web Premiate - NextJS",
+          "script": "npm",
+          "args" : "start"
+      },
+      {
+        "name": "Web Premiate - SocketIO",
+        "script": "node",
+        "args" : "socketio.js"
+      }
+  ]
+}

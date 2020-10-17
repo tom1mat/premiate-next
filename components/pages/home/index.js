@@ -12,8 +12,8 @@ import Sorteos from './Sorteos';
 import Subastas from './Subastas';
 
 import useAuth2 from '../../hooks/useAuth2';
-const PageHome = () => {
-  const loading = useAuth2(store);
+const PageHome = ({ user }) => {
+  const loading = useAuth2(store, user);
   
   return (
     <Provider store={store}>

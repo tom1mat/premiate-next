@@ -1,22 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 const Sidebar = () => (
   <ul style={{ flex: '0 1 auto' }}>
     <li>
-      <Link to="/panel/sorteos">
+      <a href="/admin/sorteos">
         Sorteos
-      </Link>
+      </a>
     </li>
     <li>
-      <Link to="/panel/subastas">
+      <a href="/admin/subastas">
         Subastas
-      </Link>
+      </a>
     </li>
     <li>
-      <Link to="/panel/usuarios">
+      <a href="/admin/usuarios">
         Usuarios
-      </Link>
+      </a>
     </li>
   </ul>
 );

@@ -185,12 +185,9 @@ class LoginButton extends React.PureComponent {
             <span className="nav-link">Hola {this.props.userData.name}!</span>
           }
           <div className="nav-link credits-container"><i className="fas fa-money-bill-wave"></i>{this.props.userData.credits}</div>
-          <a href="/cuenta" className="nav-link js-scroll-trigger">
+          <a href="/perfil" className="nav-link js-scroll-trigger">
             Mi perfil
           </a>
-          {/* <Link to="/cuenta" className="nav-link js-scroll-trigger">
-            Mi perfil
-          </Link> */}
           <a className="nav-link js-scroll-trigger" onClick={this.onHandleLogOut} href="#contact">LOG OUT</a>
         </>
         :

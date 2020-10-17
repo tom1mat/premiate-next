@@ -1,3 +1,4 @@
+import formidable from 'formidable';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
@@ -13,6 +14,12 @@ const {
   getJwtToken,
   generateHash
 } = require('../../../helpers/server');
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -39,19 +46,29 @@ export default async (req, res) => {
 const put = async (req, res) => {
   const {
     query: { id },
+    body,
   } = req;
 
-  let responseStatus = 200;
-  const { sorteo, status } = req.body;
+  const form = new formidable.IncomingForm();
+  form.uploadDir = "./";
+  form.keepExtensions = true;
+  form.parse(req, (err, fields, files) => {
+    console.log(err, fields, files);
+    return res.status(200).send({});
+  });
+  
 
-  try {
-    updateModel('sorteos', { _id: id }, { sorteo, status });
-  } catch (error) {
-    console.error(error);
-    responseStatus = 500;
-  }
+  // let responseStatus = 200;
+  // const { sorteo, status } = req.body;
 
-  res.status(responseStatus).send({});
+  // try {
+  //   updateModel('sorteos', { _id: id }, { sorteo, status });
+  // } catch (error) {
+  //   console.error(error);
+  //   responseStatus = 500;
+  // }
+
+  // res.status(responseStatus).send({});
 }
 
 //app.delete('/sorteo', async (req, res) => {
