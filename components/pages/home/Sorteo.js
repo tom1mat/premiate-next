@@ -5,7 +5,7 @@ import { notification, Modal } from 'antd';
 
 import { Context } from '../../context';
 
-const { publicRuntimeConfig: { __API_URL } } = getConfig();
+const { publicRuntimeConfig: { __API_URL, __IMAGENES_PUBLIC_PATH } } = getConfig();
 
 const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   const { usuario } = useContext(Context);
@@ -126,7 +126,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
               <i className="fas fa-plus fa-3x"></i>
             </div>
           </div>
-          <img className="img-fluid" src="img/portfolio/01-thumbnail.jpg" alt="" />
+          <img className="img-fluid" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${sorteo.image}`} alt="" />
         </div>
         <div className="portfolio-caption">
           <h4>{sorteo.titulo}</h4>
