@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
+import getConfig from 'next/config';
 import {
   Form,
   Input,
@@ -10,7 +10,8 @@ import {
 } from 'antd';
 
 import ButtonMercadoPago from '../../commons/ButtonMercadoPago';
-import { __API_URL } from '../../../config/client';
+
+const { publicRuntimeConfig: { __API_URL } } = getConfig();
 
 class ProfileForm extends React.Component {
   state = {

@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { __API_URL } from '../../../config/client';
+import getConfig from 'next/config';
 import { notification, Modal } from 'antd';
 
-class Sorteo extends React.PureComponent {
-  state = {
-    isSuscribed: this.props.isSuscribed,
-    isModalVisible: false,
-    isLoading: false,
-  }
-  onSuscribe = async () => {
-    this.setState({ isLoading: true });
+import { Context } from '../../context';
+
+const { publicRuntimeConfig: { __API_URL } } = getConfig();
+
+const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
+  const { usuario } = useContext(Context);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuscribed, setIsSuscribed] = useState(_isSuscribed);
+
+  const onSuscribe = async () => {
+    setIsLoading(true);
     const body = JSON.stringify({
-      jwtToken: this.props.jwtToken,
-      sorteoId: this.props.id,
-      email: this.props.userData.email
+      jwtToken: usuario.jwtToken,
+      sorteoId: sorteo.id,
+      email: usuario.email
     });
     const res = await fetch(`${__API_URL}/sorteos/suscribe`, {
       method: 'POST',
@@ -23,11 +27,11 @@ class Sorteo extends React.PureComponent {
         'Content-Type': 'application/json'
       }
     });
-    const status = await res.status;
 
-    this.setState({ isLoading: false });
-    if (status === 200) {
-      this.setState({ isSuscribed: true });
+    setIsLoading(false);
+
+    if (res.status === 200) {
+      setIsSuscribed(true);
       notification.success({
         placement: 'bottomRight',
         message: 'Te has suscripto exitosamente!',
@@ -40,11 +44,11 @@ class Sorteo extends React.PureComponent {
     }
   }
 
-  onUnSuscribe = async () => {
+  const onUnSuscribe = async () => {
     const body = JSON.stringify({
-      jwtToken: this.props.jwtToken,
-      sorteoId: this.props.id,
-      email: this.props.userData.email,
+      jwtToken: usuario.jwtToken,
+      sorteoId: sorteo.id,
+      email: usuario.email,
     });
     const res = await fetch(`${__API_URL}/sorteos/unsuscribe`, {
       method: 'POST',
@@ -56,100 +60,252 @@ class Sorteo extends React.PureComponent {
     const status = await res.status;
 
     if (status === 200) {
-      this.setState({ isSuscribed: false })
+      setIsSuscribed(false)
       notification.success({
         placement: 'bottomRight',
         message: 'Te has desubscripto exitosamente!',
       });
     } else {
-      notification.success({
+      console.log(status)
+      notification.warning({
         placement: 'bottomRight',
         message: 'No te has podido desubscribir en este momento, inténtalo de nuevo más tarde',
       });
     }
   }
 
-  handleClick = (ev) => {
+  const handleClick = (ev) => {
     ev.preventDefault();
-    this.setState({ isModalVisible: true });
+    setIsModalVisible(true);
   }
 
-  handleCancel = (ev) => {
+  const handleCancel = (ev) => {
     ev.preventDefault();
-    this.setState({ isModalVisible: false });
+    setIsModalVisible(false);
   }
 
-  render() {
+  let action;
 
-    const { isSignedIn, titulo } = this.props;
-    const { isSuscribed, isModalVisible, isLoading } = this.state;
+  if (!usuario) action = <p className="text-center">Debes ingresar para participar!</p>;
 
-    let action;
-
-    if (!this.props.isSignedIn) action = <p className="text-center">Debes ingresar para participar!</p>;
-
-    if (isLoading) {
-      action = (
-        <button disabled className="btn btn-primary" type="button" onClick={this.onUnSuscribe}>
-          CARGANDO...
-        </button>
-      );
-    } else {
-      action = isSuscribed ? (
-        <button className="btn btn-primary" type="button" onClick={this.onUnSuscribe}>
-          <i className="fas fa-times"></i>
-          Desinscribirse
-        </button>
-        ) : (
-          <button className="btn btn-primary" type="button" onClick={this.onSuscribe}>
-            Inscribirse
-          </button>
-      )
-    }
-
-
-    return (
-      <>
-        <Modal
-          title={titulo}
-          visible={isModalVisible}
-          centered
-          onCancel={this.handleCancel}
-          footer={null}
-        >
-          <img className="img-fluid d-block mx-auto img-sorteo" src="img/portfolio/01-full.jpg" alt="" />
-          {action}
-        </Modal>
-        <div className="col-md-4 col-sm-6 portfolio-item">
-          <div className="portfolio-link" onClick={this.handleClick}>
-            <div className="portfolio-hover">
-              <div className="portfolio-hover-content">
-                <i className="fas fa-plus fa-3x"></i>
-              </div>
-            </div>
-            <img className="img-fluid" src="img/portfolio/01-thumbnail.jpg" alt="" />
-          </div>
-          <div className="portfolio-caption">
-            <h4>{titulo}</h4>
-            {
-              isSuscribed ?
-                <p>INSCRIPTO!</p>
-                :
-                <p className="text-muted">Participa</p>
-            }
-          </div>
-        </div>
-      </>
+  if (isLoading) {
+    action = (
+      <button disabled className="btn btn-primary" type="button" onClick={onUnSuscribe}>
+        CARGANDO...
+      </button>
     );
+  } else {
+    action = isSuscribed ? (
+      <button className="btn btn-primary" type="button" onClick={onUnSuscribe}>
+        <i className="fas fa-times"></i>
+          Desinscribirse
+      </button>
+    ) : (
+        <button className="btn btn-primary" type="button" onClick={onSuscribe}>
+          Inscribirse
+        </button>
+      )
   }
+
+  return (
+    <>
+      <Modal
+        title={sorteo.titulo}
+        visible={isModalVisible}
+        centered
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <img className="img-fluid d-block mx-auto img-sorteo" src="img/portfolio/01-full.jpg" alt="" />
+        {action}
+      </Modal>
+      <div className="col-md-4 col-sm-6 portfolio-item">
+        <div className="portfolio-link" onClick={!sorteo.ganador ? handleClick : null}>
+          <div className="portfolio-hover">
+            <div className="portfolio-hover-content">
+              <i className="fas fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img className="img-fluid" src="img/portfolio/01-thumbnail.jpg" alt="" />
+        </div>
+        <div className="portfolio-caption">
+          <h4>{sorteo.titulo}</h4>
+          {
+            sorteo.ganador ? (
+              <>
+                <p>Finalizado</p>
+                <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
+              </>
+            ) : (
+            isSuscribed ?
+              <p>Inscripto</p>
+              :
+              <p className="text-muted">Participar</p>
+            )
+          }
+        </div>
+      </div>
+    </>
+  );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    jwtToken: state.jwtToken,
-    isSignedIn: state.isSignedIn,
-    userData: state.userData,
-  }
-}
+export default Sorteo;
 
-export default connect(mapStateToProps)(Sorteo);
+
+// import React from 'react';
+// import { connect } from 'react-redux';
+// import getConfig from 'next/config';
+// import { notification, Modal } from 'antd';
+
+// const { publicRuntimeConfig: { __API_URL } } = getConfig();
+
+// class Sorteo extends React.PureComponent {
+//   state = {
+//     isSuscribed: this.props.isSuscribed,
+//     isModalVisible: false,
+//     isLoading: false,
+//   }
+//   onSuscribe = async () => {
+//     this.setState({ isLoading: true });
+//     const body = JSON.stringify({
+//       jwtToken: this.props.jwtToken,
+//       sorteoId: this.props.id,
+//       email: this.props.userData.email
+//     });
+//     const res = await fetch(`${__API_URL}/sorteos/suscribe`, {
+//       method: 'POST',
+//       body,
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
+//     const status = await res.status;
+
+//     this.setState({ isLoading: false });
+//     if (status === 200) {
+//       this.setState({ isSuscribed: true });
+//       notification.success({
+//         placement: 'bottomRight',
+//         message: 'Te has suscripto exitosamente!',
+//       });
+//     } else {
+//       notification.error({
+//         placement: 'bottomRight',
+//         message: 'No te has podido subscribir en este momento, inténtalo de nuevo más tarde',
+//       });
+//     }
+//   }
+
+//   onUnSuscribe = async () => {
+//     const body = JSON.stringify({
+//       jwtToken: this.props.jwtToken,
+//       sorteoId: this.props.id,
+//       email: this.props.userData.email,
+//     });
+//     const res = await fetch(`${__API_URL}/sorteos/unsuscribe`, {
+//       method: 'POST',
+//       body,
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
+//     const status = await res.status;
+
+//     if (status === 200) {
+//       this.setState({ isSuscribed: false })
+//       notification.success({
+//         placement: 'bottomRight',
+//         message: 'Te has desubscripto exitosamente!',
+//       });
+//     } else {
+//       notification.success({
+//         placement: 'bottomRight',
+//         message: 'No te has podido desubscribir en este momento, inténtalo de nuevo más tarde',
+//       });
+//     }
+//   }
+
+//   handleClick = (ev) => {
+//     ev.preventDefault();
+//     this.setState({ isModalVisible: true });
+//   }
+
+//   handleCancel = (ev) => {
+//     ev.preventDefault();
+//     this.setState({ isModalVisible: false });
+//   }
+
+//   render() {
+
+//     const { isSignedIn, titulo } = this.props;
+//     const { isSuscribed, isModalVisible, isLoading } = this.state;
+
+//     let action;
+
+//     if (!this.props.isSignedIn) action = <p className="text-center">Debes ingresar para participar!</p>;
+
+//     if (isLoading) {
+//       action = (
+//         <button disabled className="btn btn-primary" type="button" onClick={this.onUnSuscribe}>
+//           CARGANDO...
+//         </button>
+//       );
+//     } else {
+//       action = isSuscribed ? (
+//         <button className="btn btn-primary" type="button" onClick={this.onUnSuscribe}>
+//           <i className="fas fa-times"></i>
+//           Desinscribirse
+//         </button>
+//         ) : (
+//           <button className="btn btn-primary" type="button" onClick={this.onSuscribe}>
+//             Inscribirse
+//           </button>
+//       )
+//     }
+
+
+//     return (
+//       <>
+//         <Modal
+//           title={titulo}
+//           visible={isModalVisible}
+//           centered
+//           onCancel={this.handleCancel}
+//           footer={null}
+//         >
+//           <img className="img-fluid d-block mx-auto img-sorteo" src="img/portfolio/01-full.jpg" alt="" />
+//           {action}
+//         </Modal>
+//         <div className="col-md-4 col-sm-6 portfolio-item">
+//           <div className="portfolio-link" onClick={this.handleClick}>
+//             <div className="portfolio-hover">
+//               <div className="portfolio-hover-content">
+//                 <i className="fas fa-plus fa-3x"></i>
+//               </div>
+//             </div>
+//             <img className="img-fluid" src="img/portfolio/01-thumbnail.jpg" alt="" />
+//           </div>
+//           <div className="portfolio-caption">
+//             <h4>{titulo}</h4>
+//             {
+//               isSuscribed ?
+//                 <p>INSCRIPTO!</p>
+//                 :
+//                 <p className="text-muted">Participa</p>
+//             }
+//           </div>
+//         </div>
+//       </>
+//     );
+//   }
+// }
+
+// const mapStateToProps = (state) => {
+//   return {
+//     jwtToken: state.jwtToken,
+//     isSignedIn: state.isSignedIn,
+//     userData: state.userData,
+//   }
+// }
+
+// export default connect(mapStateToProps)(Sorteo);

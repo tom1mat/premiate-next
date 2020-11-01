@@ -5,6 +5,7 @@ const {
   dbModels: {
     getModel,
     updateModel,
+    getModelFromString,
   },
 } = require('../../../helpers/server');
 
@@ -22,18 +23,18 @@ export default async (req, res) => {
   try {
     const { email, sorteoId } = req.body;
     const user = await getModel('users', { email });
-    console.log(user);
     const sorteos = user.sorteos || {};
     const sorteo = await getModel('sorteos', { _id: sorteoId });
     sorteos[sorteoId] = sorteo;
 
     await updateModel('users', { email }, { sorteos });
 
-    // console.log(
-    //   await getModel('users', { email })
-    // );
+    const sorteoUsersUpdate = sorteos.users || { };
+    sorteoUsersUpdate[user._id] = user;
 
-    console.log('si!!');
+    const response = await updateModel('sorteos', { _id: sorteoId }, { users: sorteoUsersUpdate });
+
+    console.log(response);
 
     res.status(200).end();
   } catch (error) {

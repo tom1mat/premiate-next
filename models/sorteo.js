@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const sorteoSchema = new Schema({
   image: String,
   sorteo: String,
-  status: String
+  status: String,
+  users: Object,
+  ganador: Object,
 });
 
 let model;

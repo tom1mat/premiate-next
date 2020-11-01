@@ -1,7 +1,7 @@
 import PageAdmin from '../../components/pages/admin';
 
-export default function Home({ user }) {
+export default function Home() {
   return (
-    <PageAdmin user={user} />
+    <PageAdmin />
   )
 };

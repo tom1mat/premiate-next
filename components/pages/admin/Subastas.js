@@ -1,18 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
+import getConfig from 'next/config';
 
-import { __API_URL } from '../../../config/client';
-import { fetchData } from '../../../helpers/client';
+import { useFetchData } from '../../../helpers/client';
 
-const STATUS = ["ACTIVE", "INACTIVE", "FINISHED"];
+const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
 
-const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
+const PageSubastas = ({ subastas: _subastas }) => {
+  const [subastas, setSubastas] = useState(_subastas);
+  console.log(subastas)
   const [loading, setLoading] = useState(false);
-  const [subastas, setSubastas] = useState([])
+  const fetchData = useFetchData();
 
-  useEffect(() => {
-    setSubastas(_subastas);
-  },[_subastas]);
+  const updateImageSubasta = (idSubasta, image) => {
+    const newSubastas = [];
+    let newSubasta = {};
+    for (let i = 0; i < subastas.length; i++) {
+      if (subastas[i]._id === idSubasta) {
+        newSubasta = { ...subastas[i] };
+        newSubasta.image = image;
+        newSubastas.push(newSubasta);
+      } else {
+        newSubastas.push(subastas[i])
+      }
+    }
+
+    setSubastas(newSubastas);
+  };
+
+  const updateSubasta = async event => {
+    event.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(event.target);
+
+    if (!event.target.image.value) formData.delete('image');
+
+    const config = {
+      method: 'PUT',
+      body: formData,
+      headers: {},
+    };
+
+    const { title: { value: title }, _id: { value: id } } = event.target.elements;
+
+    const response = await fetch(`api/subastas/${id}`, config);
+
+    const notif = {
+      type: 'info',
+      message: `La subasta ${title} se ha editado correctamente`
+    };
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.image) {
+        updateImageSubasta(id, data.image);
+      }
+    } else {
+      notif.type = 'warning';
+      notif.message = `No se pudo editar la subasta ${title}`;
+    }
+
+    const { type, message } = notif;
+
+    setLoading(false);
+    notification[type]({
+      placement: 'bottomRight',
+      message: message,
+    });
+  };
 
   const createSubasta = async event => {
     event.persist();
@@ -21,18 +77,21 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
 
     const formData = new FormData(event.target);
 
-    const newSorteo = await fetchData('subastas', formData, 'POST', 'formData');
+    const newSubasta = await fetchData('subastas', formData, 'POST', 'formData');
     const notif = {
       type: 'info',
       message: `La subasta se ha creado correctamente`
     };
 
-    if (newSorteo) {
-      reFetchSubastas();
+    if (newSubasta) {
+      setSubastas([
+        ...subastas,
+        { _id: newSubasta._id, title: event.target.title.value, status: event.target.status.value, image: newSubasta.image }
+      ]);
       event.target.reset();
     } else {
       notif.type = 'warning';
-      notif.message = `No se pudo crear la subasta`;
+      notif.message = `No se pudo crear La subasta`;
     }
 
     const { type, message } = notif;
@@ -42,55 +101,30 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
       placement: 'bottomRight',
       message: message,
     });
-  }
-
-  const updateSubasta = async event => {
-    event.preventDefault();
-    setLoading(true);
-    const formData = new FormData(event.target);
-    const data = await fetchData('subastas', formData, 'PUT', 'formData');
-    const notif = {
-      type: 'info',
-      message: `La subasta se ha editado correctamente`
-    };
-
-    if (data) {
-      reFetchSubastas();
-    } else {
-      notif.type = 'warning';
-      notif.message = `No se pudo editar la subasta`;
-    }
-
-    const { type, message } = notif;
-
-    setLoading(false);
-    notification[type]({
-      placement: 'bottomRight',
-      message: message,
-    });
-  }
+  };
 
   const deleteSubasta = async event => {
     event.persist();
     event.preventDefault();
-
-    const _id = event.target.value;
-    const confirm = window.confirm(`Seguro que deseas eliminar la subasta ID: ${_id}?`);
+    const confirm = window.confirm('Seguro que desea eliminar la subasta?');
 
     if (confirm) {
       setLoading(true);
 
-      const response = await fetchData('subastas', { _id }, 'DELETE');
+      const target = event.target;
+      const _id = target.value;
+      const response = await fetchData(`subastas/${_id}`, {}, 'DELETE');
       const notif = {
         type: 'info',
-        message: `La subasta ID: ${_id} ha sido eliminado correctamente`
+        message: `La subasta ha sido eliminado correctamente`
       };
 
-      if (response) {
-        reFetchSubastas();
-      } else {
+      const form = target.parentNode;
+      form.parentNode.removeChild(form);
+
+      if (!response) {
         notif.type = 'warning';
-        notif.message = `No se pudo eliminar la subasta ID: ${_id}`;
+        notif.message = `No se pudo eliminar la subasta ${_id}`;
       }
 
       const { type, message } = notif;
@@ -101,6 +135,44 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
         message: message,
       });
     }
+  };
+
+  const populateGanador = (subastaId, ganador) => {
+    const subastasConGanador = subastas.map(subasta => {
+      if (subasta._id === subastaId) {
+        return {
+          ...subasta,
+          ganador,
+        };
+      } else {
+        return subasta;
+      }
+    });
+
+    setSubastas(subastasConGanador);
+  };
+
+  const finalizarSubasta = async (ev) => {
+    ev.preventDefault();
+    const subastaId = ev.target.value;
+    try {
+      const { type, message, usuarioGanador } = await fetchData(`subastas/finalizar`, { subastaId }, 'POST');
+
+      if (type === 'success') {
+        populateGanador(subastaId, usuarioGanador);
+      }
+
+      notification[type]({
+        placement: 'bottomRight',
+        message,
+      });
+    } catch (error) {
+      console.log(error)
+      notification.error({
+        placement: 'bottomRight',
+        message: 'Error no reconocido',
+      });
+    }
   }
 
   return (
@@ -108,15 +180,10 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
       <div>
         <form id="formCreate" method="POST" onSubmit={createSubasta} encType="multipart/form-data">
           <input name="title" required />
-          <input type="number" name="amount" required />
-          <input type="datetime-local" name="dateString" />
-          <select name="winnerId">
-            {usuarios.map(({ _id, email }) => (
-              <option key={_id} value={_id}>{ email }</option>
-            ))}
-          </select>
           <select name="status">
-            {STATUS.map(s => (<option key={s} value={s}>{s}</option>))}
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+            <option value="FINISHED">FINISHED</option>
           </select>
           <input type="file" name="image" />
           <button type="submit" disabled={loading}>Crear</button>
@@ -124,25 +191,28 @@ const PageSubastas = ({ subastas: _subastas, usuarios, reFetchSubastas }) => {
       </div>
       <div>
         {
-          subastas.map(({ _id, title, image, winnerId, amount, dateString, status }) => (
-            <form key={_id} onSubmit={updateSubasta} method="POST">
-              {image && <img width="50" height="50" alt="subasta" src={`${__API_URL}premiate-uploads/${image}`} />}
-              <input defaultValue={title} name="title" required />
-              <input defaultValue={amount} type="number" name="amount" required />
-              <input type="datetime-local" name="dateString" defaultValue={dateString} />
-              <select defaultValue={winnerId} name="winnerId">
-                {usuarios.map(({ _id, email }) => (
-                  <option key={_id} value={_id}>{ email }</option>
-                ))}
-              </select>
-              <select name="status" defaultValue={status}>
-                {STATUS.map(s => (<option key={s} value={s}>{s}</option>))}
-              </select>
-              <input type="hidden" value={_id} name="_id" />
-              <input type="file" name="image" />
-              <button type="submit" disabled={loading}>Editar</button>
-              <button value={_id} onClick={deleteSubasta} disabled={loading}>Eliminar</button>
-            </form>
+          subastas.map(({ _id, title, image, status, ganador }) => (
+            <React.Fragment key={_id}>
+              <form key={_id} onSubmit={updateSubasta} method="POST">
+                {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
+                <input defaultValue={title} name="title" required/>
+                <select name="status" defaultValue={status}>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                  <option value="FINISHED">FINISHED</option>
+                </select>
+                <input type="hidden" value={_id} name="_id" />
+                <input type="file" name="image" />
+                <button type="submit" disabled={loading}>Editar</button>
+                <button value={_id} onClick={deleteSubasta} disabled={loading}>Eliminar</button>
+                <button value={_id} onClick={finalizarSubasta} disabled={loading}>Finalizar</button>
+              </form>
+              {
+                ganador && (
+                  <div>Ganador: {ganador.email}</div>
+                )
+              }
+            </React.Fragment>
           ))
         }
       </div>

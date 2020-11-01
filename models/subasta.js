@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const subastaSchema = new Schema({
-    title: String,
-    dateString: String,
-    amount: Number,
-    status: String,
-    winnerId: String,
-    image: String,
+  title: String,
+  dateString: String,
+  amount: Number,
+  status: String,
+  ganador: Object,
+  image: String,
 });
 
 let model;

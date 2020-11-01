@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@zeit/next-sass": "^1.0.1",
     "antd": "^3.26.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
@@ -18,6 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.25",
     "next": "9.4.4",
+    "node-sass": "^4.14.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-redux": "^7.2.0",

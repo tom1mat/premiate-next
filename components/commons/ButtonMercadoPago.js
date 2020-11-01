@@ -1,6 +1,7 @@
 import React from 'react';
+import getConfig from 'next/config';
 
-import { __API_URL } from '../../config/client';
+const { publicRuntimeConfig: { __API_URL } } = getConfig();
 
 export default class MercadoPago extends React.PureComponent {
   componentDidMount() {

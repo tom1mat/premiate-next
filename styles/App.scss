@@ -100,6 +100,11 @@ code {
   color: white;
   background: none;
   border: none;
+
+  &--disabled {
+    color: gray;
+    pointer-events: none;
+  }
 }
 
 .nav-link:active {

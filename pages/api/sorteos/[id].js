@@ -1,18 +1,19 @@
 import formidable from 'formidable';
+import getConfig from 'next/config';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+
 const {
   dbModels: {
     getModel,
-    createModel,
     updateModel,
-    getModelFromString,
     deleteModel,
+    getModelFromString,
   },
-  getJwtToken,
-  generateHash
+  deleteImage,
 } = require('../../../helpers/server');
 
 export const config = {
@@ -42,63 +43,78 @@ export default async (req, res) => {
   }
 }
 
-//app.put('/sorteo', (req, res) => {
 const put = async (req, res) => {
-  const {
-    query: { id },
-    body,
-  } = req;
+  const { query: { id } } = req;
 
   const form = new formidable.IncomingForm();
-  form.uploadDir = "./";
+  form.uploadDir = `${__IMAGENES_UPLOAD_PATH}sorteos/`;
   form.keepExtensions = true;
-  form.parse(req, (err, fields, files) => {
-    console.log(err, fields, files);
-    return res.status(200).send({});
+  const { status, data } = await new Promise((resolve) => {
+    form.parse(req, async (err, fields, files) => {
+      const { sorteo, status } = fields;
+
+      const data = {
+        sorteo,
+        status,
+      };
+
+      let image = null;
+
+      if (files.image) {
+        image = files.image.path.split('sorteos/')[1];
+        data.image = image;
+
+        const sorteo = await getModel('sorteos', { _id: id });
+        if (sorteo.image) {
+          deleteImage(`sorteos/${sorteo.image}`);
+        }
+      }
+
+      let responseStatus = 200;
+
+      try {
+        updateModel('sorteos', { _id: id }, data);
+      } catch (error) {
+        console.error(error);
+        responseStatus = 500;
+      }
+
+      resolve({ status: responseStatus, data: { image } });
+    });
   });
-  
-
-  // let responseStatus = 200;
-  // const { sorteo, status } = req.body;
-
-  // try {
-  //   updateModel('sorteos', { _id: id }, { sorteo, status });
-  // } catch (error) {
-  //   console.error(error);
-  //   responseStatus = 500;
-  // }
-
-  // res.status(responseStatus).send({});
+  return res.status(status).send(data);
 }
 
-//app.delete('/sorteo', async (req, res) => {
 const _delete = async (req, res) => {
   const {
     query: { id },
   } = req;
 
   let responseStatus = 200;
-
-  const sorteo = await getModel('sorteos', { _id: id });
-
-  if (sorteo.image) {
-    await new Promise(res => {
-      fs.unlink(`${__dirname}/premiate-uploads/${sorteo.image}`, (err) => {
-        if (err) {
-          console.error(err);
-          return res(false);
-        }
-        return res(true);
-      });
-    });
-  }
-
   try {
-    deleteModel('sorteos', { _id: id });
+    const sorteo = await getModel('sorteos', { _id: id });
+
+    if (sorteo.image) {
+      deleteImage(`sorteos/${sorteo.image}`);
+    }
+
+    await deleteModel('sorteos', { _id: id });
+
+
+    // Borramos todas las suscripciones a este sorteo de todos los usuarios.
+    const users = await getModel('users');
+    users.forEach((user) => {
+      if (user.sorteos) {
+        const sorteos = { ...user.sorteos };
+        delete sorteos[id];
+
+        updateModel('users', { _id: user._id }, { sorteos })
+      }
+    });
   } catch (error) {
     console.error(error);
     responseStatus = 500;
   }
 
-  res.status(responseStatus).send({});
+  return res.status(responseStatus).send({});
 }

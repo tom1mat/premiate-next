@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
+import getConfig from 'next/config';
 
-import { __API_URL } from '../../../config/client';
-import { fetchData } from '../../../helpers/client';
+import { useFetchData } from '../../../helpers/client';
+
+const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
 
 const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   const [sorteos, setSorteos] = useState(_sorteos);
   const [loading, setLoading] = useState(false);
-  console.log(sorteos);
+  const fetchData = useFetchData();
+
+  const updateImageSorteo = (idSorteo, image) => {
+    const newSorteos = [];
+    let newSorteo = {};
+    for (let i = 0; i < sorteos.length; i++) {
+      if (sorteos[i]._id === idSorteo) {
+        newSorteo = { ...sorteos[i] };
+        newSorteo.image = image;
+        newSorteos.push(newSorteo);
+      } else {
+        newSorteos.push(sorteos[i])
+      }
+    }
+
+    setSorteos(newSorteos);
+  };
 
   const updateSorteo = async event => {
     event.preventDefault();
@@ -25,18 +43,21 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
 
     const { sorteo: { value: sorteo }, _id: { value: id } } = event.target.elements;
 
-    const data = await fetch(`api/sorteos/${id}`, config);
-    // const { sorteo, status, _id } = event.target.elements;
-    // const params = { sorteo: sorteo.value, status: status.value, _id: _id.value }
-    // const data = await fetchData(`sorteos/${_id.value}`, params, 'PUT');
+    const response = await fetch(`api/sorteos/${id}`, config);
+
     const notif = {
       type: 'info',
-      message: `El sorteo ${sorteo.value} se ha editado correctamente`
+      message: `El sorteo ${sorteo} se ha editado correctamente`
     };
 
-    if (!data) {
+    if (response.ok) {
+      const data = await response.json();
+      if (data.image) {
+        updateImageSorteo(id, data.image);
+      }
+    } else {
       notif.type = 'warning';
-      notif.message = `No se pudo editar el sorteo ${sorteo.value}`;
+      notif.message = `No se pudo editar el sorteo ${sorteo}`;
     }
 
     const { type, message } = notif;
@@ -60,11 +81,11 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
       type: 'info',
       message: `El sorteo se ha creado correctamente`
     };
-    console.log(newSorteo);
+
     if (newSorteo) {
       setSorteos([
         ...sorteos,
-        { _id: newSorteo._id, sorteo: event.target.sorteo.value, status: event.target.status.value }
+        { _id: newSorteo._id, sorteo: event.target.sorteo.value, status: event.target.status.value, image: newSorteo.image }
       ]);
       event.target.reset();
     } else {
@@ -91,7 +112,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
 
       const target = event.target;
       const _id = target.value;
-      const response = await fetchData(`sorteos/${_id}`, { }, 'DELETE');
+      const response = await fetchData(`sorteos/${_id}`, {}, 'DELETE');
       const notif = {
         type: 'info',
         message: `El sorteo ha sido eliminado correctamente`
@@ -117,6 +138,45 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
     }
   };
 
+  const populateGanador = (sorteoId, ganador) => {
+    const sorteosConGanador = sorteos.map(sorteo => {
+      if (sorteo._id === sorteoId) {
+        return {
+          ...sorteo,
+          ganador,
+        };
+      } else {
+        return sorteo;
+      }
+    });
+
+    setSorteos(sorteosConGanador);
+  };
+
+  const sortear = async (ev) => {
+    ev.preventDefault();
+    const sorteoId = ev.target.value;
+    try {
+      const { type, message, usuarioGanador } = await fetchData(`sorteos/sortear`, { sorteoId }, 'POST');
+      console.log( type, message)
+
+      if (type === 'success') {
+        populateGanador(sorteoId, usuarioGanador);
+      }
+
+      notification[type]({
+        placement: 'bottomRight',
+        message,
+      });
+    } catch (error) {
+      console.log(error)
+      notification.error({
+        placement: 'bottomRight',
+        message: 'Error no reconocido',
+      });
+    }
+  }
+
   return (
     <>
       <div>
@@ -133,20 +193,41 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
       </div>
       <div>
         {
-          sorteos.map(({ _id, sorteo, image, status }) => (
-            <form key={_id} onSubmit={updateSorteo} method="POST">
-              {image && <img width="50" height="50" alt="sorteo" src={`${__API_URL}premiate-uploads/${image}`} />}
-              <input defaultValue={sorteo} name="sorteo" required />
-              <select name="status" defaultValue={status}>
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="INACTIVE">INACTIVE</option>
-                <option value="FINISHED">FINISHED</option>
-              </select>
-              <input type="hidden" value={_id} name="_id" />
-              <input type="file" name="image" />
-              <button type="submit" disabled={loading}>Editar</button>
-              <button value={_id} onClick={deleteSorteo} disabled={loading}>Eliminar</button>
-            </form>
+          sorteos.map(({ _id, sorteo, image, status, users, ganador }) => (
+            <React.Fragment key={_id}>
+              <form key={_id} onSubmit={updateSorteo} method="POST">
+                {image && <img width="50" height="50" alt="sorteo" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${image}`} />}
+                <input defaultValue={sorteo} name="sorteo" required />
+                <select name="status" defaultValue={status}>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                  <option value="FINISHED">FINISHED</option>
+                </select>
+                <input type="hidden" value={_id} name="_id" />
+                <input type="file" name="image" />
+                <button type="submit" disabled={loading}>Editar</button>
+                <button value={_id} onClick={deleteSorteo} disabled={loading}>Eliminar</button>
+                <button value={_id} onClick={sortear} disabled={loading}>Sortear</button>
+              </form>
+              {
+                ganador ? (
+                  <div>Ganador: {ganador.email}</div>
+                ) : (
+                    users && (
+                      <div>
+                        <div>Participantes</div>
+                        <ul>
+                          {
+                            Object.values(users).map(user => (
+                              <li key={user._id}>{user.email}</li>
+                            ))
+                          }
+                        </ul>
+                      </div>
+                    )
+                  )
+              }
+            </React.Fragment>
           ))
         }
       </div>

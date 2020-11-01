@@ -1,18 +1,26 @@
+import formidable from 'formidable';
+import getConfig from 'next/config';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+
 const {
   dbModels: {
     getModel,
-    createModel,
     updateModel,
-    getModelFromString,
     deleteModel,
+    getModelFromString,
   },
-  getJwtToken,
-  generateHash
+  deleteImage,
 } = require('../../../helpers/server');
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -38,37 +46,76 @@ export default async (req, res) => {
 const put = async (req, res) => {
   const { query: { id } } = req;
 
-  let responseStatus = 200;
-  const { amount, dateString, winnerId, title, status } = req.body;
-  const updateData = { amount, dateString, winnerId, title, status };
+  const form = new formidable.IncomingForm();
+  form.uploadDir = `${__IMAGENES_UPLOAD_PATH}subastas/`;
+  form.keepExtensions = true;
 
-  if (req.file) {
-    //Eliminamos la imagen vieja
-    const subasta = await getModel('subastas', { _id: id });
-    const isImageDeleted = await new Promise(res => {
-      fs.unlink(`${__dirname}/premiate-uploads/${subasta.image}`, (err) => {
-        if (err){
-          console.error(err);
-          return res(false);
+  const { status, data } = await new Promise((resolve) => {
+    form.parse(req, async (err, fields, files) => {
+      const { title, status } = fields;
+
+      const data = {
+        title,
+        status,
+      };
+
+      let image = null;
+
+      if (files.image) {
+        image = files.image.path.split('subastas/')[1];
+        data.image = image;
+
+        const subasta = await getModel('subastas', { _id: id });
+        if (subasta.image) {
+          deleteImage(`subastas/${subasta.image}`);
         }
-        return res(true);
-      });
+      }
+
+      let responseStatus = 200;
+
+      try {
+        updateModel('subastas', { _id: id }, data);
+      } catch (error) {
+        console.error(error);
+        responseStatus = 500;
+      }
+
+      resolve({ status: responseStatus, data: { image } });
     });
+  });
+  return res.status(status).send(data);
+}
 
-    updateData.image = req.file.filename;
-  }
+const _delete = async (req, res) => {
+  const {
+    query: { id },
+  } = req;
 
+  let responseStatus = 200;
   try {
-    updateModel('subastas', { _id: id }, updateData);
+    const subasta = await getModel('subastas', { _id: id });
+
+    if (subasta.image) {
+      deleteImage(`subastas/${subasta.image}`);
+    }
+
+    await deleteModel('subastas', { _id: id });
+
+
+    // Borramos todas las suscripciones a este subasta de todos los usuarios.
+    // const users = await getModel('users');
+    // users.forEach((user) => {
+    //   if (user.subastas) {
+    //     const subastas = { ...user.subastas };
+    //     delete subastas[id];
+
+    //     updateModel('users', { _id: user._id }, { subastas })
+    //   }
+    // });
   } catch (error) {
     console.error(error);
     responseStatus = 500;
   }
 
   return res.status(responseStatus).send({});
-}
-
-//app.delete('/sorteo', async (req, res) => {
-const _delete = async (req, res) => {
-
 }

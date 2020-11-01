@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 
-import { fetchData } from '../../../helpers/client';
+import { useFetchData } from '../../../helpers/client';
 
 const PageUsuarios = ({ usuarios: _usuarios, reFetchUsuarios }) => {
   const [usuarios, setUsuarios] = useState(_usuarios);
   const [loading, setLoading] = useState(false);
+  const fetchData = useFetchData();
+
   useEffect(() => {
     setUsuarios(_usuarios);
   },[_usuarios]);

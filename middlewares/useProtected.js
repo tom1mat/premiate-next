@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import getConfig from 'next/config';
 
-const { __JWTKEY } = require('../config/server');
-// import { __JWTKEY } from '../config/server';
+const { publicRuntimeConfig: { __JWTKEY } } = getConfig();
 
 const getRoute = (url) => {
   let paths = url.split('/');

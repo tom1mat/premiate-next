@@ -1,6 +1,10 @@
+import formidable from 'formidable';
+import getConfig from 'next/config';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
+
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
 
 const {
   dbModels: {
@@ -8,6 +12,12 @@ const {
     createModel,
   },
 } = require('../../../helpers/server');
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -37,21 +47,34 @@ const get = async (req, res) => {
   }
 }
 
-// app.post('/sorteo', upload.single('image'), async (req, res) => {
 const post = async (req, res) => {
-  const { sorteo, status } = req.body;
-  let statusResponse = 200;
-  let newSorteo = null;
+  const form = new formidable.IncomingForm();
+  form.uploadDir = `${__IMAGENES_UPLOAD_PATH}sorteos/`;
+  form.keepExtensions = true;
 
-  const data = { sorteo, status };
+  const { status, data } = await new Promise((resolve) => {
+    form.parse(req, async (err, fields, files) => {
+      const { sorteo, status } = fields;
 
-  if (req.file) data.image = req.file.filename;
+      const image = files.image.path.split('sorteos/')[1];
+      const data = {
+        sorteo,
+        status,
+        image,
+      };
 
-  try {
-    newSorteo = await createModel('sorteos', data);
-  } catch (error) {
-    statusResponse = 500;
-  }
+      let statusResponse = 200;
+      let newSorteo = null;
 
-  return res.status(statusResponse).send(newSorteo);
+      try {
+        newSorteo = await createModel('sorteos', data);
+      } catch (error) {
+        statusResponse = 500;
+      }
+
+      resolve({ status: statusResponse, data: newSorteo });
+    });
+  });
+
+  return res.status(status).send(data);
 }

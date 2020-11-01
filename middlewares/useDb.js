@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import getConfig from 'next/config';
 
-import { __MONGO_CONNECTION } from '../config/server';
+const { publicRuntimeConfig: { __MONGO_CONNECTION } } = getConfig();
 
 const useDb = async (req) => {
   if (mongoose.connections[0].readyState) return;

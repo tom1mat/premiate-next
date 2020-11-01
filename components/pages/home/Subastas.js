@@ -2,27 +2,11 @@ import React from 'react';
 
 import Subasta from './Subasta';
 
-import { __API_URL } from '../../../config/client';
+const Subastas = ({ subastas }) => {
 
-export default class Subastas extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      subastas: null
-    }
-  }
-
-  async componentDidMount() {
-    const response = await fetch(`${__API_URL}/subastas`);
-    if (response.status === 200) {
-      const subastas = await response.json();
-      this.setState({ subastas });
-    }
-  }
-
-  render() {
-    if (this.state.subastas) {
-      return <section className="bg-light page-section container-subastas">
+  return (
+    subastas && subastas.length > 0 ? (
+      <section className="bg-light page-section container-subastas">
         <div className="container text-center">
           <div className="row">
             <div className="col-lg-12 text-center">
@@ -31,12 +15,14 @@ export default class Subastas extends React.Component {
             </div>
           </div>
           <div className="row">
-          {this.state.subastas.map((subasta) => ( <Subasta key={subasta._id} id={subasta._id} amount={subasta.amount} title={subasta.title} dateString={subasta.dateString}/>))}
+            {subastas.map((subasta) => (<Subasta key={subasta._id} subasta={subasta} />))}
           </div>
         </div>
       </section>
-    } else {
-      return <div>No hay subastas</div>;
-    }
-  }
-}
+    ) : (
+      <div>No hay subastas</div>
+    )
+  )
+};
+
+export default Subastas;

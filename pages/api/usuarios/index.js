@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
@@ -8,7 +9,10 @@ const {
     createModel
   },
   getJwtToken,
+  isAdmin,
 } = require('../../../helpers/server');
+
+const { publicRuntimeConfig: { __STARTINGCREDITS } } = getConfig();
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -38,12 +42,20 @@ const get = async (req, res) => {
   }
 }
 
-//app.post('/createAccountFromGoogle', async (req, res) => {
-//app.post('/createAccount', async (req, res) => {
+const userExists = async (email) => {
+  const user = await getModel('users', { email });
+
+  return !!user;
+}
+
 const post = async (req, res) => {
   const { origen } = req.query;
+  const { email, name, surname, googleData, password } = req.body;
+
   if (origen === 'google') {
-    const { email, name, surname, googleData } = req.body;
+    if (await userExists(email)) {
+      return res.status(409).json({ message: `Ya hay un usuario creado con ${email}` });
+    }
 
     const data = {
       email,
@@ -54,9 +66,10 @@ const post = async (req, res) => {
     }
 
     if (createModel('users', data)) {
-      const jwtToken = await getJwtToken(email);
+      const admin = isAdmin(email);
+      const jwtToken = await getJwtToken({ email, isAdmin: admin });
 
-      res.status(200).send({
+      res.status(200).json({
         ...data,
         jwtToken,
         email: data.email,
@@ -64,12 +77,13 @@ const post = async (req, res) => {
         googleData: data.googleData,
       });
     } else {
-      res.status(204).end();
+      return res.status(400).json({ message: 'Error, no se pudo crear el usuario' });
     }
   } else {
-    // QUEDA PENDIENTE INVESTIGAR COMO MANTENER LA SESION INICIADA SIN GOOGLE!!!
-    // COOKIES!!.
-    const { email, password } = req.body;
+    if (await userExists(email)) {
+      return res.status(400).json({ message: `Ya hay un usuario creado con ${email}` });
+    }
+
     const hash = await generateHash(password);
 
     const data = {
@@ -79,7 +93,8 @@ const post = async (req, res) => {
     }
 
     if (createModel('users', data)) {
-      const jwtToken = await getJwtToken(email);
+      const admin = isAdmin(email);
+      const jwtToken = await getJwtToken({ email, isAdmin: admin });
 
       return res.status(200).send({
         ...data,
@@ -88,7 +103,7 @@ const post = async (req, res) => {
         credits: data.credits,
       });
     } else {
-      return res.status(204).end();
+      return res.status(400).json({ message: 'Error, no se pudo crear el usuario' });
     }
   }
 }

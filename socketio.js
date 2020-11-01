@@ -3,7 +3,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const useProtected = require('./middlewares/useProtected');
+// const useProtected = require('./middlewares/useProtected');
 
 io.on('connection', function (socket) {
   socket.on('message', function (data) {
@@ -28,10 +28,10 @@ app.use((req, res, next) => {
 });
 
 app.post('/update-sockets', (req, res) => {
-  useProtected(req, res).then(() => {
+  // useProtected(req, res).then(() => {
     const { id, amount, email, name } = req.body;
 
     io.sockets.emit(`raise-${id}`, amount, email, name);
     res.status(200);
-  });
+  // });
 });

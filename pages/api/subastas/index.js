@@ -1,17 +1,23 @@
+import formidable from 'formidable';
+import getConfig from 'next/config';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
+
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
 
 const {
   dbModels: {
     getModel,
     createModel,
-    updateModel,
-    getModelFromString,
-    deleteModel,
   },
-  getJwtToken,
 } = require('../../../helpers/server');
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -35,27 +41,41 @@ export default async (req, res) => {
 const get = async (req, res) => {
   try {
     const subastas = await getModel('subastas');
-    // subastas.filter(subasta => (Date.parse(subasta.dateString) > Date.now()) || subasta.status === 'PENDING')
-    return res.status(200).send(subastas);
+    res.status(200).send(subastas.filter(subasta => subasta.status !== 'DELETED'));
   } catch (error) {
     return res.status(500).send([]);
   }
 }
 
 const post = async (req, res) => {
-  const { amount, dateString, winnerId, title, status } = req.body;
-  let statusResponse = 200;
-  let newSubasta = null;
+  const form = new formidable.IncomingForm();
+  form.uploadDir = `${__IMAGENES_UPLOAD_PATH}subastas/`;
+  form.keepExtensions = true;
 
-  const data = { amount, dateString, winnerId, title, status };
+  const { status, data } = await new Promise((resolve) => {
+    form.parse(req, async (err, fields, files) => {
+      const { title, status } = fields;
 
-  if (req.file) data.image = req.file.filename;
+      const image = files.image.path.split('subastas/')[1];
+      const data = {
+        title,
+        status,
+        image,
+      };
 
-  try {
-    newSubasta = await createModel('subastas', data);
-  } catch (error) {
-    statusResponse = 500;
-  }
+      let statusResponse = 200;
+      let newsubasta = null;
 
-  return res.status(statusResponse).send(newSubasta);
- }
+      try {
+        newsubasta = await createModel('subastas', data);
+      } catch (error) {
+        statusResponse = 500;
+      }
+
+      console.log('newsubasta: ', newsubasta)
+      resolve({ status: statusResponse, data: newsubasta });
+    });
+  });
+
+  return res.status(status).send(data);
+}

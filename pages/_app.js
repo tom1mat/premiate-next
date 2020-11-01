@@ -1,40 +1,25 @@
 import React from 'react';
-import Head from 'next/head';
+import getConfig from 'next/config';
 
+import { Context } from '../components/context';
+import PageTemplate from '../components/PageTemplate';
 import { parseCookies, getUserFromCookie } from '../helpers/server';
+import useAuth2 from '../components/hooks/useAuth2';
 
-import '../styles/App.css';
+import '../styles/App.scss';
 
-const MyApp = ({ Component, pageProps, user }) => {
+const { publicRuntimeConfig: { __API_URL } } = getConfig();
+
+const MyApp = ({ Component, pageProps, sorteos, subastas, usuario }) => {
+  const auth2 = useAuth2();
+
   return (
-    <>
-      <Head>
-        <base href="/" />
-        {/* <base href="http://localhost:3000" /> */}
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Premiate - nos encanta regalar cosas" />
-        <meta name="author" content="Premiate" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <title>Premiate</title>
-
-        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-
-        <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
-        <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css' />
-        <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css' />
-        <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css' />
-
-        <link href="css/agency.css" rel="stylesheet" />
-        <link href="css/more-styles.css" rel="stylesheet" />
-
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-      </Head>
-      <Component {...pageProps} user={user} />
-    </>
-  )
+    <PageTemplate>
+      <Context.Provider value={{ usuario, sorteos, subastas, auth2 }}>
+        <Component {...pageProps} />
+      </Context.Provider>
+    </PageTemplate>
+  );
 };
 
 function isAllowed(user, pathname) {
@@ -51,9 +36,44 @@ MyApp.getInitialProps = async ({ ctx: req }) => {
     return req.res.end();
   }
 
+  const [sorteos, subastas, usuario] = await getInitialData(user ? user.email : null);
+
   return {
-    user,
+    sorteos, subastas, usuario
   }
 };
 
 export default MyApp;
+
+const getInitialData = async (email) => {
+  const sorteosPromise = fetch(`${__API_URL}/sorteos`);
+  const subastasPromise = fetch(`${__API_URL}/subastas`);
+  const promises = [sorteosPromise, subastasPromise];
+
+  if (email) {
+    const usuarioPromise = new Promise(async (resolve) => {
+      const response = await fetch(`${__API_URL}/usuarios/${email}`);
+      if (response.status === 200) {
+        resolve(response.json());
+      }
+
+      resolve(null);
+    });
+    promises.push(usuarioPromise);
+  } else {
+    promises.push(Promise.resolve(null));
+  }
+
+  return Promise.all(
+    promises
+  ).then(async ([sorteosResponse, subastasResponse, usuarioResponse]) => {
+    return [
+      await sorteosResponse.json(),
+      await subastasResponse.json(),
+      usuarioResponse ?
+        await usuarioResponse.json ? usuarioResponse.json() : usuarioResponse
+        :
+        null
+    ]
+  });
+}

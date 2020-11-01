@@ -8,6 +8,7 @@ const {
     updateModel,
   },
   getJwtToken,
+  isAdmin,
 } = require('../../../helpers/server');
 
 export default async (req, res) => {
@@ -46,51 +47,36 @@ const put = async (req, res) => {
   res.status(status).end();
 }
 
-const isAdmin = email => ['tomasmateo10@gmail.com'].includes(email);
-
 //app.get('/getUserData', async (req, res) => {
 const get = async (req, res) => {
   const {
     query: { email, password },
   } = req;
 
-  if (!email) return res.status(500).end();
+  if (!email) return res.status(500).json({ message: 'Error, intente mas tarde' });
 
   const userData = await getModel('users', { email });
 
-  if (!userData) return res.status(404).end();
-
-  const { name, surname, credits, creditsUsed, googleData, sorteos, subastas } = userData;
   if (userData) {
-    const responseData = {
-      name,
-      surname,
-      email,
-      credits,
-      creditsUsed,
-      googleData,
-      sorteos,
-      subastas,
-    };
-
     if (password) {// Normal Login
       bcrypt.compare(password, userData.password, async (err, passIsCorrect) => {
         if (passIsCorrect) {
           const admin = isAdmin(email);
           const jwtToken = await getJwtToken({ email, isAdmin: admin });
-          responseData.jwtToken = jwtToken;
-          return res.status(200).send(responseData);
+          userData.jwtToken = jwtToken;
+          return res.status(200).json(userData);
         } else {
-          return res.status(401).end();
+          return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
         }
       });
     } else {// Google login
       const admin = isAdmin(email);
       const jwtToken = await getJwtToken({ email, isAdmin: admin });
-      responseData.jwtToken = jwtToken;
-      return res.status(200).send(responseData);
+      userData.jwtToken = jwtToken;
+      return res.status(200).json(userData);
     }
   } else {
-    return res.status(404).end();
+    console.log(password)
+    return res.status(400).json({ message: password ? 'Usuario o contraseña inválido/s' : 'Usuario inexistente' });
   }
 }
