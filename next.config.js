@@ -14,7 +14,7 @@ module.exports = withSass({
     __STARTINGCREDITS: 500,
     __SALTROUNDS: 10,
     __MONGO_CONNECTION,
-    __IMAGENES_UPLOAD_PATH: 'nginxfiles/imagenes/',
+    __IMAGENES_UPLOAD_PATH: DEVELOP ? 'nginxfiles/imagenes/' : '/home/files-premiate/',
     __IMAGENES_PUBLIC_PATH: 'imagenes/'
   },
   webpack: (config, { isServer }) => {
