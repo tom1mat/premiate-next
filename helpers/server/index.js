@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 import getConfig from 'next/config';
 import fs from 'fs';
-import { serialize } from 'cookie'
+import { serialize } from 'cookie';
 
-const { publicRuntimeConfig: { __JWTKEY, __IMAGENES_UPLOAD_PATH } } = getConfig();
+const { publicRuntimeConfig: { __JWTKEY, __IMAGENES_UPLOAD_PATH, __SALTROUNDS } } = getConfig();
 
 const getJwtToken = async (data) => {
   return await new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ const getJwtToken = async (data) => {
 
 const { getModelFromString, getModel, createModel, updateModel, deleteModel } = require('./dbmodels');
 
-const generateHash = password => (new Promise(
+const generateHash = (password, bcrypt) => (new Promise(
   resolve => {
     bcrypt.genSalt(__SALTROUNDS, function (err, salt) {
       bcrypt.hash(password, salt, async (err, hash) => {
@@ -78,9 +78,9 @@ const setCookie = (res, name, value) => {
   }
 
   res.setHeader('Set-Cookie', serialize(name, String(stringValue)))
-}
+};
 
-const isAdmin = email => ['tomasmateo10@gmail.com'].includes(email);
+const isAdmin = email => ['tomasmateo10@gmail.com', 'agus.fontova@gmail.com', 'admin@premiate.ar'].includes(email);
 
 module.exports = {
   dbModels: {
@@ -98,4 +98,4 @@ module.exports = {
   deleteImage,
   setCookie,
   isAdmin,
-}
+};

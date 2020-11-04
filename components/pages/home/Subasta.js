@@ -113,7 +113,7 @@ const Subasta = ({ subasta }) => {
       return;
     }
 
-    if (localAmount === 0) {
+    if (localAmount <= amount) {
       notification.warning({
         placement: 'bottomRight',
         duration: 15,
@@ -129,9 +129,11 @@ const Subasta = ({ subasta }) => {
     console.log(usuario.credits);
     console.log(creditsSum)
 
+    // if (creditsSum > userCredits) {
     if (creditsSum > userCredits) {
       setisRaIseButtonDisabled(true);
-      const diff = creditsSum - userCredits;
+      // const diff = creditsSum - userCredits;
+      const diff = localAmount - userCredits;
       notification.warning({
         placement: 'bottomRight',
         message: <>No tienes credits suficientes! Te faltan {diff} <ButtonMercadoPago text="Recargar" amount={diff} /></>,
@@ -145,8 +147,10 @@ const Subasta = ({ subasta }) => {
       id: subasta._id,
       email: usuario.email,
       name: usuario.name,
-      amount: localAmount + amount,
-      userAmount: localAmount,
+      // amount: localAmount + amount,
+      // userAmount: localAmount,
+      amount: localAmount,
+      // userAmount: localAmount,
     });
     const response = await fetch('/api/subastas/raise', {
       method: 'POST',
@@ -196,9 +200,9 @@ const Subasta = ({ subasta }) => {
           ) : (
               <>
                 <InputNumber
-                  defaultValue={1}
+                  defaultValue={amount + 1}
                   onChange={handleLocalAmount}
-                  min={1}
+                  min={amount}
                 />
                 <Button disabled={isRaiseButtonDisabled} type="success" onClick={handleRaise}>Subir apuesta</Button>
               </>

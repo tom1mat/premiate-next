@@ -6,13 +6,8 @@ import useProtected from '../../../middlewares/useProtected';
 const {
   dbModels: {
     getModel,
-    createModel,
     updateModel,
-    getModelFromString,
-    deleteModel,
   },
-  getJwtToken,
-  generateHash
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
@@ -31,13 +26,15 @@ export default async (req, res) => {
   await useProtected(req, res);
   await useDb(req);
   useSocketIo(req, res);
-  const { userAmount, email, name } = req.body;
+  const { amount: _amount, email, name } = req.body;
+
+  const amount = Number.parseInt(_amount);
 
   try {
     const user = await getModel('users', { email });
     const subasta = await getModel('subastas', { _id: subastaId });
 
-    const amount = Number.parseInt(userAmount) + Number.parseInt(subasta.amount || 0);
+    // const amount = Number.parseInt(userAmount) + Number.parseInt(subasta.amount || 0);
     const subastaData = {
       amount,
       ganador: user,
@@ -48,17 +45,19 @@ export default async (req, res) => {
       const ganadorViejo = await getModel('users', { _id: subasta.ganador._id });
       const newSubastas = ganadorViejo.subastas ? { ...ganadorViejo.subastas } : { };
       delete newSubastas[subastaId];
-      updateModel('users', { _id: subasta.ganador._id }, { subastas: newSubastas, creditsUsed: user.creditsUsed - subasta.amount });
+
+      const creditsUsed = user.creditsUsed - subasta.amount;
+      await updateModel('users', { _id: subasta.ganador._id }, { subastas: newSubastas, creditsUsed: creditsUsed < 0 ? 0 : creditsUsed });
     }
     // 2) Actualizar la subasta
-    updateModel('subastas', { _id: subastaId }, subastaData);
+    await updateModel('subastas', { _id: subastaId }, subastaData);
     // 3) Actualizar los creditos del ganador y agregamos la subasta a la lista
-    const creditsUsed = (user.creditsUsed || 0) + Number.parseInt(amount);
+    const creditsUsed = (user.creditsUsed || 0) + amount;
     const userData = {
       creditsUsed,
       subastas: user.subastas ? { ...user.subastas, [subastaId]: subasta } : { [subastaId]: subasta },
     };
-    updateModel('users', { email }, userData);
+    await updateModel('users', { email }, userData);
 
 
     // 4) Update in all the fronts

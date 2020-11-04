@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';

@@ -1,4 +1,5 @@
 import getConfig from 'next/config';
+import bcrypt from 'bcrypt';
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
@@ -10,6 +11,7 @@ const {
   },
   getJwtToken,
   isAdmin,
+  generateHash
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __STARTINGCREDITS } } = getConfig();
@@ -84,7 +86,7 @@ const post = async (req, res) => {
       return res.status(400).json({ message: `Ya hay un usuario creado con ${email}` });
     }
 
-    const hash = await generateHash(password);
+    const hash = await generateHash(password, bcrypt);
 
     const data = {
       email,

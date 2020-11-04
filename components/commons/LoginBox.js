@@ -11,6 +11,7 @@ class LoginButton extends React.PureComponent {
   state = {
     isSignedIn: false,
     hasAcceptedTerms: false,
+    loading: false,
   }
 
   setCookie = (jwtToken) => {
@@ -19,6 +20,7 @@ class LoginButton extends React.PureComponent {
   }
 
   fetchLogIn = async (email, password) => {
+    this.setState({ loading: true });
     let url = `${__API_URL}/usuarios/${email}`;
     if (password) url += `?password=${password}`;
     const res = await fetch(url);
@@ -34,6 +36,7 @@ class LoginButton extends React.PureComponent {
         message: message || 'Error, no se pudo loguear, intente mas tarde',
       });
     }
+    this.setState({ loading: false });
   }
 
   onHandleGoogleLogIn = (auth2) => {
@@ -54,6 +57,7 @@ class LoginButton extends React.PureComponent {
     ev.preventDefault();
     if (this.state.hasAcceptedTerms) {
       auth2.signIn().then(async () => {
+        this.setState({ loading: true });
         const profile = auth2.currentUser.get().getBasicProfile();
         const body = JSON.stringify({
           googleData: {
@@ -83,6 +87,8 @@ class LoginButton extends React.PureComponent {
             message,
           });
         }
+
+        this.setState({ loading: false });
       });
     } else {
       notification.warning({
@@ -97,6 +103,7 @@ class LoginButton extends React.PureComponent {
     if (this.state.hasAcceptedTerms) {
       const { createEmail, createPassword } = this.state;
       if (createEmail && createPassword) {
+        this.setState({ loading: true });
         const body = JSON.stringify({
           email: this.state.createEmail,
           password: this.state.createPassword,
@@ -119,6 +126,7 @@ class LoginButton extends React.PureComponent {
             message,
           });
         }
+        this.setState({ loading: false });
       } else {
         notification.warning({
           placement: 'bottomRight',
@@ -179,9 +187,10 @@ class LoginButton extends React.PureComponent {
       <Context.Consumer>
         {
           ({ usuario, auth2 }) => {
+            if (this.state.loading) return <i className="fas fa-circle-notch fa-spin"></i>;
+
             return usuario ? (
               <>
-              {console.log('auth2: ',auth2)}
                 {
                   usuario.name &&
                   <span className="nav-link">Hola {usuario.name}!</span>
