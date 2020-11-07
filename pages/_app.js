@@ -19,13 +19,15 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
   const socket = io(__SOCKETIO_SERVER);
 
   socket.on('connect', function () {
+    console.log('AQUI _app.js!:  connect')
     socket.on('update-data', function (data) {
-
       if (data.subastas) {
+        console.log('_app.js update-data: SUBASSTAS')
         setSubastas(JSON.parse(data.subastas));
       }
 
       if (data.sorteos) {
+        console.log('_app.js update-data: SORTEOS')
         setSorteos(JSON.parse(data.sorteos));
       }
     });
