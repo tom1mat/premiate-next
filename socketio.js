@@ -42,8 +42,15 @@ app.post('/update-data', (req, res) => {
 
     const data = { };
 
-    if (subastas) data.subastas = JSON.stringify(subastas);
-    if (sorteos) data.sorteos = JSON.stringify(sorteos);
+    if (subastas) {
+      data.subastas = JSON.stringify(subastas);
+      console.log('update subastas!: ', JSON.stringify(data.subastas))
+    }
+
+    if (sorteos) {
+      data.sorteos = JSON.stringify(sorteos);
+      console.log('update sorteos!: ', JSON.stringify(data.sorteos))
+    }
 
     io.sockets.emit('update-data', data);
     res.status(200);
