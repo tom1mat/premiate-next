@@ -20,7 +20,7 @@ export default async (req, res) => {
 
     // const { status } = await fetch(`${__SOCKETIO_SERVER}/update-sockets`, params);
     const { status } = await fetch(`${__SOCKETIO_SERVER}/ping`);
-    const res = await res.json();
+    const response = await response.json();
     console.log('status: ', status);
     console.log('response: ', response);
     res.status(200).send({});
