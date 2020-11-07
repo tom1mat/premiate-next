@@ -49,3 +49,10 @@ app.post('/update-data', (req, res) => {
     res.status(200);
   // });
 });
+
+app.get('/ping', (req, res) => {
+  // useProtected(req, res).then(() => {
+
+    res.status(200).json('pong');
+  // });
+});
