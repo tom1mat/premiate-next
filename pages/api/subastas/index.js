@@ -41,7 +41,7 @@ export default async (req, res) => {
 const get = async (req, res) => {
   try {
     const subastas = await getModel('subastas');
-    res.status(200).send(subastas.filter(subasta => subasta.status !== 'DELETED'));
+    res.status(200).send(subastas.filter(subasta => subasta.status !== 'INACTIVE'));
   } catch (error) {
     return res.status(500).send([]);
   }

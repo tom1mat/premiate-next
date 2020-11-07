@@ -82,6 +82,21 @@ code {
 .card-subasta {
   display: inline-block;
   margin: 25px;
+
+  &--finishing {
+    .ant-card-head {
+      @keyframes myAnimation {
+        0% {background: red;}
+        50% {background: orange;}
+        100% {background: red;}
+      }
+
+      animation-name: myAnimation;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+      color: white;
+    }
+  }
 }
 
 .container-subastas {

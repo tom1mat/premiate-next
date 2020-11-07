@@ -129,7 +129,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
           <img className="img-fluid" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${sorteo.image}`} alt="" />
         </div>
         <div className="portfolio-caption">
-          <h4>{sorteo.titulo}</h4>
+          <h4>{sorteo.sorteo}</h4>
           {
             sorteo.ganador ? (
               <>

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import getConfig from 'next/config';
+import io from 'socket.io-client';
 
 import { Context } from '../components/context';
 import PageTemplate from '../components/PageTemplate';
@@ -8,10 +9,27 @@ import useAuth2 from '../components/hooks/useAuth2';
 
 import '../styles/App.scss';
 
-const { publicRuntimeConfig: { __API_URL } } = getConfig();
+const { publicRuntimeConfig: { __API_URL, __SOCKETIO_SERVER } } = getConfig();
 
-const MyApp = ({ Component, pageProps, sorteos, subastas, usuario }) => {
+const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario }) => {
   const auth2 = useAuth2();
+  const [sorteos, setSorteos] = useState(_sorteos);
+  const [subastas, setSubastas] = useState(_subastas);
+
+  const socket = io(__SOCKETIO_SERVER);
+
+  socket.on('connect', function () {
+    socket.on('update-data', function (data) {
+
+      if (data.subastas) {
+        setSubastas(JSON.parse(data.subastas));
+      }
+
+      if (data.sorteos) {
+        setSorteos(JSON.parse(data.sorteos));
+      }
+    });
+  });
 
   return (
     <PageTemplate>

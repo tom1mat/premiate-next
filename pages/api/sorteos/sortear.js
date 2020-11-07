@@ -11,11 +11,8 @@ const {
 
 const getRandomUser = (usuarios) => {
   const keysArr = Object.keys(usuarios);
-  // console.log('keysArr: ', keysArr)
   const randomIndex = Math.floor(Math.random() * keysArr.length);
-  // console.log('randomIndex: ', randomIndex)
   const randomKey = keysArr[randomIndex];
-  // console.log('randomKey: ', randomKey)
   return usuarios[randomKey];
 }
 
@@ -65,8 +62,6 @@ export default async (req, res) => {
   }
 
   try {
-    console.log('sorteoId', sorteoId)
-    console.log('ganador', ganador)
     await Promise.all([
       updateModel('sorteos', { _id: sorteoId }, { ganador, status: 'FINISHED' }),
       updateModel('users', { _id: ganador._id }, { sorteos: sorteosGanador }),

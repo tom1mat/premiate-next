@@ -42,7 +42,10 @@ const PageSubastas = ({ subastas: _subastas }) => {
       headers: {},
     };
 
-    const { title: { value: title }, _id: { value: id } } = event.target.elements;
+    const {
+      title: { value: title },
+      _id: { value: id },
+    } = event.target.elements;
 
     const response = await fetch(`api/subastas/${id}`, config);
 
@@ -115,7 +118,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
       const _id = target.value;
       const response = await fetchData(`subastas/${_id}`, {}, 'DELETE');
       const notif = {
-        type: 'info',
+        type: 'success',
         message: `La subasta ha sido eliminado correctamente`
       };
 
@@ -137,29 +140,16 @@ const PageSubastas = ({ subastas: _subastas }) => {
     }
   };
 
-  const populateGanador = (subastaId, ganador) => {
-    const subastasConGanador = subastas.map(subasta => {
-      if (subasta._id === subastaId) {
-        return {
-          ...subasta,
-          ganador,
-        };
-      } else {
-        return subasta;
-      }
-    });
-
-    setSubastas(subastasConGanador);
-  };
-
   const finalizarSubasta = async (ev) => {
     ev.preventDefault();
+    ev.persist();
     const subastaId = ev.target.value;
     try {
-      const { type, message, usuarioGanador } = await fetchData(`subastas/finalizar`, { subastaId }, 'POST');
+      const { type, message } = await fetchData(`subastas/finalizar`, { subastaId }, 'POST');
 
       if (type === 'success') {
-        populateGanador(subastaId, usuarioGanador);
+        const selectStatus = ev.target.parentElement.status;
+        selectStatus.value = 'FINISHED';
       }
 
       notification[type]({
@@ -180,6 +170,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
       <div>
         <form id="formCreate" method="POST" onSubmit={createSubasta} encType="multipart/form-data">
           <input name="title" required />
+          <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" />
           <select name="status">
             <option value="ACTIVE">ACTIVE</option>
             <option value="INACTIVE">INACTIVE</option>
@@ -191,11 +182,13 @@ const PageSubastas = ({ subastas: _subastas }) => {
       </div>
       <div>
         {
-          subastas.map(({ _id, title, image, status, ganador }) => (
+          subastas.map(({ _id, title, dateString, image, status, ganador }) => (
             <React.Fragment key={_id}>
               <form key={_id} onSubmit={updateSubasta} method="POST">
                 {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
                 <input defaultValue={title} name="title" required/>
+                {console.log('dateString: ',dateString)}
+                <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" defaultValue={dateString} />
                 <select name="status" defaultValue={status}>
                   <option value="ACTIVE">ACTIVE</option>
                   <option value="INACTIVE">INACTIVE</option>

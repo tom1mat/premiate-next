@@ -29,11 +29,14 @@ const buildStartTimer = (secondsDiff) => {
   return [seconds, minutes, hours, days];
 }
 
+const getSecondsDiff = (date) => date.getTime() / 1000 - Date.now() / 1000;
+
 const Subasta = ({ subasta }) => {
   const { usuario } = useContext(Context);
 
   const subastaDate = new Date(subasta.dateString);
-  const secondsDiff = subastaDate.getTime() / 1000 - Date.now() / 1000;
+
+  const [secondsDiff, setSecondsDiff] = useState(getSecondsDiff(subastaDate));
   const [_seconds, _minutes, _hours, _days] = buildStartTimer(secondsDiff);
   const [seconds, setSeconds] = useState(_seconds);
   const [minutes, setMinutes] = useState(_minutes);
@@ -44,6 +47,27 @@ const Subasta = ({ subasta }) => {
   const [isRaiseButtonDisabled, setisRaIseButtonDisabled] = useState(false);
   const [creditsUsed, setCreditsUsed] = useState((usuario && usuario.creditsUsed) ? usuario.creditsUsed : 0);
   const [ganadorEmail, setGanadorEmail] = useState(subasta.ganador ? subasta.ganador.email : null);
+  const [finishing, setFinishing] = useState(false);
+
+  const setWarning = () => {
+    setFinishing(true);
+    if (!finishing && subasta.status === 'ACTIVE') {
+      notification.info({
+        placement: 'bottomRight',
+        duration: 0,
+        message: `Atención, la subasta ${subasta.title} está por finalizar!`,
+      });
+    }
+  }
+
+  useEffect(() => {
+    const newSubastaDate = new Date(subasta.dateString);
+    const _secondsDiff = getSecondsDiff(newSubastaDate);
+    console.log('_secondsDiff: ', _secondsDiff);
+    setSecondsDiff(_secondsDiff);
+    const [_seconds, _minutes, _hours, _days] = buildStartTimer(_secondsDiff);
+    setSeconds(_seconds);setMinutes(_minutes); setHours(_hours); setDays(_days)
+  }, [subasta.dateString]);
 
   useEffect(() => {
     let interval;
@@ -51,11 +75,16 @@ const Subasta = ({ subasta }) => {
       interval = setInterval(() => {
         setSeconds(seconds - 1);
 
+        if (minutes < 5) {
+          setWarning();
+        }
+
         if (seconds === 0) {
           if (minutes === 0) {
             if (hours === 0) {
               if (days === 0) {
                 setSeconds(0); setMinutes(0); setHours(0); setDays(0);
+                setWarning();
                 clearInterval(interval);
               } else {
                 setDays(days - 1)
@@ -76,8 +105,15 @@ const Subasta = ({ subasta }) => {
       }, 1000);
     } else {
       setSeconds(0); setMinutes(0); setHours(0); setDays(0);
+      setWarning();
     }
 
+    return () => {
+      clearInterval(interval);
+    }
+  }, [secondsDiff, seconds, minutes, hours, days]);
+
+  useEffect(() => {
     const socket = io(__SOCKETIO_SERVER);
 
     socket.on('connect', function () {
@@ -92,11 +128,7 @@ const Subasta = ({ subasta }) => {
         setAmount(_amount);
       });
     });
-
-    return () => {
-      clearInterval(interval);
-    }
-  }, []);
+  }, [usuario]);
 
   const handleRaise = async (e) => {
     e.preventDefault();
@@ -124,10 +156,6 @@ const Subasta = ({ subasta }) => {
 
     const userCredits = usuario.credits;
     const creditsSum = creditsUsed + localAmount;
-
-    console.log(`creditsUsed: ${creditsUsed} localAmount${localAmount}`)
-    console.log(usuario.credits);
-    console.log(creditsSum)
 
     // if (creditsSum > userCredits) {
     if (creditsSum > userCredits) {
@@ -184,7 +212,7 @@ const Subasta = ({ subasta }) => {
     <Card
       hoverable
       style={{ width: 240 }}
-      className="card-subasta"
+      className={`card-subasta ${finishing ? 'card-subasta--finishing' : ''}`}
       cover={<img alt="parlante" width="240" src={`${__IMAGENES_PUBLIC_PATH}subastas/${subasta.image}`} />}
       title={subasta.title}
     >

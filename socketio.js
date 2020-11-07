@@ -35,3 +35,17 @@ app.post('/update-sockets', (req, res) => {
     res.status(200);
   // });
 });
+
+app.post('/update-data', (req, res) => {
+  // useProtected(req, res).then(() => {
+    const { subastas, sorteos } = req.body;
+
+    const data = { };
+
+    if (subastas) data.subastas = JSON.stringify(subastas);
+    if (sorteos) data.sorteos = JSON.stringify(sorteos);
+
+    io.sockets.emit('update-data', data);
+    res.status(200);
+  // });
+});

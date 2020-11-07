@@ -41,7 +41,7 @@ export default async (req, res) => {
 const get = async (req, res) => {
   try {
     const sorteos = await getModel('sorteos');
-    res.status(200).send(sorteos.filter(sorteo => sorteo.status !== 'DELETED'));
+    res.status(200).send(sorteos.filter(sorteo => sorteo.status !== 'INACTIVE'));
   } catch (error) {
     return res.status(500).send([]);
   }

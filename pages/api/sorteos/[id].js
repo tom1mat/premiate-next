@@ -4,7 +4,7 @@ import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
-const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_SERVER } } = getConfig();
 
 const {
   dbModels: {
@@ -73,7 +73,19 @@ const put = async (req, res) => {
       let responseStatus = 200;
 
       try {
-        updateModel('sorteos', { _id: id }, data);
+        await updateModel('sorteos', { _id: id }, data);
+
+        const sorteos = await getModel('sorteos');
+
+        const params = {
+          method: 'POST',
+          body: JSON.stringify({
+            sorteos: sorteos.filter(sorteo => sorteo.status !== 'INACTIVE'),
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        };
+
+        fetch(`${__SOCKETIO_SERVER}/update-data`, params);
       } catch (error) {
         console.error(error);
         responseStatus = 500;
@@ -99,7 +111,6 @@ const _delete = async (req, res) => {
     }
 
     await deleteModel('sorteos', { _id: id });
-
 
     // Borramos todas las suscripciones a este sorteo de todos los usuarios.
     const users = await getModel('users');

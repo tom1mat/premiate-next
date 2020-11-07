@@ -4,14 +4,13 @@ import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
-const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_SERVER } } = getConfig();
 
 const {
   dbModels: {
     getModel,
     updateModel,
     deleteModel,
-    getModelFromString,
   },
   deleteImage,
 } = require('../../../helpers/server');
@@ -52,11 +51,12 @@ const put = async (req, res) => {
 
   const { status, data } = await new Promise((resolve) => {
     form.parse(req, async (err, fields, files) => {
-      const { title, status } = fields;
+      const { title, status, dateString } = fields;
 
       const data = {
         title,
         status,
+        dateString,
       };
 
       let image = null;
@@ -74,7 +74,19 @@ const put = async (req, res) => {
       let responseStatus = 200;
 
       try {
-        updateModel('subastas', { _id: id }, data);
+        await updateModel('subastas', { _id: id }, data);
+
+        const subastas = await getModel('subastas');
+
+        const params = {
+          method: 'POST',
+          body: JSON.stringify({
+            subastas: subastas.filter(subasta => subasta.status !== 'INACTIVE'),
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        };
+
+        fetch(`${__SOCKETIO_SERVER}/update-data`, params);
       } catch (error) {
         console.error(error);
         responseStatus = 500;
@@ -83,6 +95,7 @@ const put = async (req, res) => {
       resolve({ status: responseStatus, data: { image } });
     });
   });
+
   return res.status(status).send(data);
 }
 
