@@ -85,7 +85,8 @@ const put = async (req, res) => {
           headers: { 'Content-Type': 'application/json' },
         };
 
-        fetch(`${__SOCKETIO_SERVER}/update-data`, params);
+        // fetch(`${__SOCKETIO_SERVER}/update-data`, params);
+        fetch(`https://premiate.ar/socket.io/update-data`, params);
       } catch (error) {
         console.error(error);
         responseStatus = 500;
