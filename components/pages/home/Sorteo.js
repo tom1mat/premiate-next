@@ -66,7 +66,6 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
         message: 'Te has desubscripto exitosamente!',
       });
     } else {
-      console.log(status)
       notification.warning({
         placement: 'bottomRight',
         message: 'No te has podido desubscribir en este momento, inténtalo de nuevo más tarde',

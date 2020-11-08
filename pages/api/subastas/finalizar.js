@@ -22,19 +22,15 @@ export default async (req, res) => {
 
   const { method } = req;
 
-  console.log('1--------------------------------------------')
   if (method !== 'POST') {
     res.setHeader('Allow', ['GET', 'POST']);
     return res.status(405).end(`Method ${method} Not Allowed`);
   }
 
-  console.log('2--------------------------------------------')
   const { subastaId } = req.body;
   try {
     const subasta = await getModel('subastas', { _id: subastaId });
-    console.log('3--------------------------------------------')
     if (!subasta) return res.status(500).json({ type: 'error', message: 'Error, no existe la subasta' });
-    console.log('4--------------------------------------------')
 
     if (!subasta.ganador || isObjectEmpty(subasta.ganador)) {
       return res.status(200).json({ type: 'warning', message: 'No se puede finalizar, no hay ningún ganador' });

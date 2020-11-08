@@ -15,7 +15,6 @@ class LoginButton extends React.PureComponent {
   }
 
   setCookie = (jwtToken) => {
-    console.log(jwtToken);
     jsCookie.set('jwtToken', jwtToken, { secure: true, sameSite: 'None', expires: 7 });
   }
 

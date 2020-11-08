@@ -34,8 +34,6 @@ export default async (req, res) => {
 
     const response = await updateModel('sorteos', { _id: sorteoId }, { users: sorteoUsersUpdate });
 
-    console.log(response);
-
     res.status(200).end();
   } catch (error) {
     console.error(error);

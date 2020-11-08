@@ -8,7 +8,6 @@ const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
 
 const PageSubastas = ({ subastas: _subastas }) => {
   const [subastas, setSubastas] = useState(_subastas);
-  console.log(subastas)
   const [loading, setLoading] = useState(false);
   const fetchData = useFetchData();
 

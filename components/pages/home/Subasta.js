@@ -63,7 +63,6 @@ const Subasta = ({ subasta }) => {
   useEffect(() => {
     const newSubastaDate = new Date(subasta.dateString);
     const _secondsDiff = getSecondsDiff(newSubastaDate);
-    console.log('_secondsDiff: ', _secondsDiff);
     setSecondsDiff(_secondsDiff);
     const [_seconds, _minutes, _hours, _days] = buildStartTimer(_secondsDiff);
     setSeconds(_seconds);setMinutes(_minutes); setHours(_hours); setDays(_days)

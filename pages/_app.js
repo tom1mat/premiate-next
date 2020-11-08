@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import getConfig from 'next/config';
 import io from 'socket.io-client';
 
@@ -16,23 +16,31 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
   const [sorteos, setSorteos] = useState(_sorteos);
   const [subastas, setSubastas] = useState(_subastas);
 
-  const socket = io(__SOCKETIO_SERVER);
+  // useEffect(() => {
+  //   console.log('UPDATEARON LAS SUBASTAS!!')
+  // }, [subastas]);
 
-  socket.on('connect', function () {
-    console.log('AQUI _app.js!:  connect')
-    socket.on('update-data', function (data) {
-      if (data.subastas) {
-        console.log('_app.js update-data: SUBASSTAS')
-        console.log(JSON.parse(data.subastas));
-        setSubastas(JSON.parse(data.subastas));
-      }
+  // useEffect(() => {
+  //   const socket = io(__SOCKETIO_SERVER);
 
-      if (data.sorteos) {
-        console.log('_app.js update-data: SORTEOS')
-        setSorteos(JSON.parse(data.sorteos));
-      }
-    });
-  });
+  //   socket.on('connect', function () {
+  //     console.log('AQUI _app.js!:  connect')
+  //     socket.on('update-data', function (data) {
+  //       if (data.subastas) {
+  //         console.log('_app.js update-data: SUBASSTAS')
+  //         // console.log(JSON.parse(data.subastas));
+  //         // setSubastas(JSON.parse(data.subastas));
+  //         setSubastas([...JSON.parse(data.subastas)]);
+  //         // setSubastas([]);
+  //       }
+
+  //       if (data.sorteos) {
+  //         console.log('_app.js update-data: SORTEOS')
+  //         setSorteos(JSON.parse(data.sorteos));
+  //       }
+  //     });
+  //   });
+  // }, []);
 
   return (
     <PageTemplate>
