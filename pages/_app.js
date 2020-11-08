@@ -23,6 +23,7 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
     socket.on('update-data', function (data) {
       if (data.subastas) {
         console.log('_app.js update-data: SUBASSTAS')
+        console.log(JSON.parse(data.subastas));
         setSubastas(JSON.parse(data.subastas));
       }
 
