@@ -187,7 +187,6 @@ const PageSubastas = ({ subastas: _subastas }) => {
               <form key={_id} onSubmit={updateSubasta} method="POST">
                 {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
                 <input defaultValue={title} name="title" required/>
-                {console.log('dateString: ',dateString)}
                 <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" defaultValue={dateString} />
                 <select name="status" defaultValue={status}>
                   <option value="ACTIVE">ACTIVE</option>

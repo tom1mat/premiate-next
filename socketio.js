@@ -28,38 +28,31 @@ app.use((req, res, next) => {
 });
 
 app.post('/update-sockets', (req, res) => {
-  // useProtected(req, res).then(() => {
-    const { id, amount, email, name } = req.body;
+  const { id, amount, email, name } = req.body;
 
-    io.sockets.emit(`raise-${id}`, amount, email, name);
-    res.status(200);
-  // });
+  io.sockets.emit(`raise-${id}`, amount, email, name);
+  res.status(200);
 });
 
 app.post('/update-data', (req, res) => {
-  // useProtected(req, res).then(() => {
     const { subastas, sorteos } = req.body;
 
     const data = { };
 
     if (subastas) {
       data.subastas = JSON.stringify(subastas);
-      console.log('update subastas!: ', JSON.stringify(data.subastas))
+      console.log('update subastas!')
     }
 
     if (sorteos) {
       data.sorteos = JSON.stringify(sorteos);
-      console.log('update sorteos!: ', JSON.stringify(data.sorteos))
+      console.log('update sorteos!')
     }
 
     io.sockets.emit('update-data', data);
     res.status(200);
-  // });
 });
 
 app.get('/ping', (req, res) => {
-  // useProtected(req, res).then(() => {
-
-    res.status(200).json('pong');
-  // });
+  res.status(200).json('pong');
 });
