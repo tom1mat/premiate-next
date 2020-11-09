@@ -7,7 +7,7 @@ module.exports = withSass({
   publicRuntimeConfig: {
     __API_URL: DEVELOP ? 'http://localhost:3001/api' : 'https://premiate.ar/api',
     DEVELOP,
-    __SOCKETIO_SERVER: DEVELOP ? 'http://localhost:3030' : 'http://localhost/socket.io/', //'https://premiate.ar/socket.io/',
+    __SOCKETIO_SERVER: DEVELOP ? 'http://localhost:3030' : 'http://premiate.ar', //'https://premiate.ar/socket.io/',
     __CLIENT_ID_GOOGLE,
     __PORT: process.env.PORT | 80,
     __JWTKEY,
