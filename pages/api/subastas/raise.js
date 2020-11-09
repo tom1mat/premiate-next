@@ -10,7 +10,7 @@ const {
   },
 } = require('../../../helpers/server');
 
-const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
+const { publicRuntimeConfig: { __SOCKETIO_API } } = getConfig();
 
 export default async (req, res) => {
   const {
@@ -73,7 +73,7 @@ export default async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
     };
 
-    fetch(`${__SOCKETIO_SERVER}/update-sockets`, params);
+    fetch(`${__SOCKETIO_API}/update-sockets`, params);
 
     res.status(200).send(userData);
   } catch (error) {

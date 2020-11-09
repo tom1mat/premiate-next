@@ -4,14 +4,13 @@ import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
-const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_SERVER } } = getConfig();
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_API } } = getConfig();
 
 const {
   dbModels: {
     getModel,
     updateModel,
     deleteModel,
-    getModelFromString,
   },
   deleteImage,
 } = require('../../../helpers/server');
@@ -85,8 +84,7 @@ const put = async (req, res) => {
           headers: { 'Content-Type': 'application/json' },
         };
 
-        // fetch(`${__SOCKETIO_SERVER}/update-data`, params);
-        fetch(`https://premiate.ar/socket/update-data`, params);
+        fetch(`${__SOCKETIO_API}/update-data`, params);
       } catch (error) {
         console.error(error);
         responseStatus = 500;
