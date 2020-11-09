@@ -86,7 +86,7 @@ const put = async (req, res) => {
         };
 
         // fetch(`${__SOCKETIO_SERVER}/update-data`, params);
-        fetch(`https://premiate.ar/socket.io/update-data`, params);
+        fetch(`https://premiate.ar/socket/update-data`, params);
       } catch (error) {
         console.error(error);
         responseStatus = 500;
