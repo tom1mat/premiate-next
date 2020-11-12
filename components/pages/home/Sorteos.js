@@ -7,7 +7,7 @@ const Sorteos = ({ usuario, sorteos }) => {
 
   return (
     sorteos && sorteos.length > 0 ? (
-    <section className="bg-light page-section" id="portfolio">
+    <section className="bg-light page-section" id="sorteos">
       <div className="container">
         <div className="row">
           <div className="col-lg-12 text-center">

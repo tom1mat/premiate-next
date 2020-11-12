@@ -50,8 +50,8 @@ const Subasta = ({ subasta }) => {
   const [finishing, setFinishing] = useState(false);
 
   const setWarning = () => {
-    setFinishing(true);
     if (!finishing && subasta.status === 'ACTIVE') {
+      setFinishing(true);
       notification.info({
         placement: 'bottomRight',
         duration: 0,
@@ -65,8 +65,11 @@ const Subasta = ({ subasta }) => {
     const _secondsDiff = getSecondsDiff(newSubastaDate);
     setSecondsDiff(_secondsDiff);
     const [_seconds, _minutes, _hours, _days] = buildStartTimer(_secondsDiff);
-    setSeconds(_seconds);setMinutes(_minutes); setHours(_hours); setDays(_days)
-  }, [subasta.dateString]);
+    setSeconds(_seconds); setMinutes(_minutes); setHours(_hours); setDays(_days);
+
+    if (subasta.status === 'FINISHED') setFinishing(false);
+    if (_minutes < 5 && subasta.status === 'ACTIVE') setFinishing(true);
+  }, [subasta.dateString, subasta.status]);
 
   useEffect(() => {
     let interval;
@@ -207,6 +210,51 @@ const Subasta = ({ subasta }) => {
     setLocalAmount(value);
   }
 
+  let content = null;
+
+  if (subasta.status === 'FINISHED') {
+    content = (
+      <>
+        <p>Finalizada</p>
+        <p>{`Ganador ${subasta.ganador.email.split('@')[0]}`}</p>
+      </>
+    )
+  } else {
+    content = (
+      <>
+        {
+          seconds < 1 ? (
+            <div>¡Últimos segundos!</div>
+          ) : (
+              <>
+                <p>{seconds} Segundos</p>
+                <p>{minutes} Minutos</p>
+                <p>{hours} Horas</p>
+                <p>{days} Días</p>
+              </>
+            )
+        }
+        <div className="amount">{amount} credits</div>
+        <form>
+          {
+            usuario && usuario.email === ganadorEmail ? (
+              <div>Vas ganando!</div>
+            ) : (
+                <>
+                  <InputNumber
+                    defaultValue={amount + 1}
+                    onChange={handleLocalAmount}
+                    min={amount}
+                  />
+                  <Button disabled={isRaiseButtonDisabled} type="success" onClick={handleRaise}>Subir apuesta</Button>
+                </>
+              )
+          }
+        </form>
+      </>
+    );
+  }
+
   return (
     <Card
       hoverable
@@ -215,27 +263,7 @@ const Subasta = ({ subasta }) => {
       cover={<img alt="parlante" width="240" src={`${__IMAGENES_PUBLIC_PATH}subastas/${subasta.image}`} />}
       title={subasta.title}
     >
-      <p>{seconds} Segundos</p>
-      <p>{minutes} Minutos</p>
-      <p>{hours} Horas</p>
-      <p>{days} Días</p>
-      <div className="amount">{amount} credits</div>
-      <form>
-        {
-          usuario && usuario.email === ganadorEmail ? (
-            <div>Vas ganando!</div>
-          ) : (
-              <>
-                <InputNumber
-                  defaultValue={amount + 1}
-                  onChange={handleLocalAmount}
-                  min={amount}
-                />
-                <Button disabled={isRaiseButtonDisabled} type="success" onClick={handleRaise}>Subir apuesta</Button>
-              </>
-            )
-        }
-      </form>
+      {content}
     </Card>
   )
 }

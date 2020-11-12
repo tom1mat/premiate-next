@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default () =>   <section className="page-section" id="services">
+export default () =>   <section className="page-section" id="nosotros">
 <div className="container">
   <div className="row">
     <div className="col-lg-12 text-center">

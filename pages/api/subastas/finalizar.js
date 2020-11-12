@@ -55,7 +55,7 @@ export default async (req, res) => {
 
     await Promise.all([
       updateModel('subastas', { _id: subastaId }, { ganador: usuario, status: 'FINISHED' }),
-      updateModel('users', { _id: usuario._id }, { subastas: subastasGanador }),
+      updateModel('users', { _id: usuario._id }, { subastas: subastasGanador, credits: usuario.credits - subasta.amount }),
     ]);
     return res.status(200).json({
       type: 'success',

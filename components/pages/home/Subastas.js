@@ -8,7 +8,7 @@ const Subastas = ({ subastas }) => {
   }, [subastas]);
   return (
     subastas && subastas.length > 0 ? (
-      <section className="bg-light page-section container-subastas">
+      <section className="bg-light page-section container-subastas" id="subastas">
         <div className="container text-center">
           <div className="row">
             <div className="col-lg-12 text-center">
