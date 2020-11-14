@@ -43,14 +43,20 @@ const Subasta = ({ subasta }) => {
   const [hours, setHours] = useState(_hours);
   const [days, setDays] = useState(_days);
   const [amount, setAmount] = useState(subasta.amount);
-  const [localAmount, setLocalAmount] = useState(1);
+  const [localAmount, setLocalAmount] = useState(amount + 1);
   const [isRaiseButtonDisabled, setisRaIseButtonDisabled] = useState(false);
   const [creditsUsed, setCreditsUsed] = useState((usuario && usuario.creditsUsed) ? usuario.creditsUsed : 0);
   const [ganadorEmail, setGanadorEmail] = useState(subasta.ganador ? subasta.ganador.email : null);
   const [finishing, setFinishing] = useState(false);
 
   const setWarning = () => {
-    if (!finishing && subasta.status === 'ACTIVE') {
+    if (
+        !finishing &&
+        subasta.status === 'ACTIVE' &&
+        _hours < 1 &&
+        days < 1 &&
+        _minutes < 5
+      ) {
       setFinishing(true);
       notification.info({
         placement: 'bottomRight',
@@ -68,8 +74,8 @@ const Subasta = ({ subasta }) => {
     setSeconds(_seconds); setMinutes(_minutes); setHours(_hours); setDays(_days);
 
     if (subasta.status === 'FINISHED') setFinishing(false);
-    if (_minutes < 5 && subasta.status === 'ACTIVE') setFinishing(true);
-  }, [subasta.dateString, subasta.status]);
+    setWarning();
+  }, [subasta.dateString, subasta.status, subasta.dateString]);
 
   useEffect(() => {
     let interval;
@@ -77,9 +83,7 @@ const Subasta = ({ subasta }) => {
       interval = setInterval(() => {
         setSeconds(seconds - 1);
 
-        if (minutes < 5) {
-          setWarning();
-        }
+        setWarning();
 
         if (seconds === 0) {
           if (minutes === 0) {
@@ -156,14 +160,9 @@ const Subasta = ({ subasta }) => {
       return;
     }
 
-    const userCredits = usuario.credits;
-    const creditsSum = creditsUsed + localAmount;
-
-    // if (creditsSum > userCredits) {
-    if (creditsSum > userCredits) {
+    if (localAmount > usuario.credits) {
       setisRaIseButtonDisabled(true);
-      // const diff = creditsSum - userCredits;
-      const diff = localAmount - userCredits;
+      const diff = Math.abs(localAmount - usuario.credits);
       notification.warning({
         placement: 'bottomRight',
         message: <>No tienes credits suficientes! Te faltan {diff} <ButtonMercadoPago text="Recargar" amount={diff} /></>,
@@ -210,6 +209,11 @@ const Subasta = ({ subasta }) => {
     setLocalAmount(value);
   }
 
+  const hasLastSeconds = () => {
+    const onlySeconds = [days, hours, minutes].every(each => each === 0);
+    return onlySeconds && seconds < 1;
+  }
+
   let content = null;
 
   if (subasta.status === 'FINISHED') {
@@ -223,7 +227,7 @@ const Subasta = ({ subasta }) => {
     content = (
       <>
         {
-          seconds < 1 ? (
+          hasLastSeconds() ?   (
             <div>¡Últimos segundos!</div>
           ) : (
               <>

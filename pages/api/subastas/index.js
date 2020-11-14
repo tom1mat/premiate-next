@@ -72,7 +72,6 @@ const post = async (req, res) => {
         statusResponse = 500;
       }
 
-      console.log('newsubasta: ', newsubasta)
       resolve({ status: statusResponse, data: newsubasta });
     });
   });

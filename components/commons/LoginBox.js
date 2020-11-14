@@ -191,10 +191,9 @@ class LoginButton extends React.PureComponent {
             return usuario ? (
               <>
                 {
-                  usuario.name &&
-                  <span className="nav-link">Hola {usuario.name}!</span>
+                  <span className="nav-link">Hola {usuario.email}!</span>
                 }
-                <div className="nav-link credits-container"><i className="fas fa-money-bill-wave"></i>{usuario.credits}</div>
+                <div className="nav-link credits-container"><i className="fas fa-money-bill-wave"></i>{usuario.credits - usuario.creditsUsed}</div>
                 <a href="/perfil" className="nav-link js-scroll-trigger">Mi perfil</a>
                 <a className={`nav-link js-scroll-trigger ${!auth2 ? 'nav-link--disabled' : ''}`} onClick={() => this.onHandleLogOut(auth2)} href="#contact">LOG OUT</a>
               </>

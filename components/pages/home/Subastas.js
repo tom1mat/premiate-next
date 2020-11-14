@@ -3,9 +3,6 @@ import React, { useEffect } from 'react';
 import Subasta from './Subasta';
 
 const Subastas = ({ subastas }) => {
-  useEffect(() => {
-    console.log('SIII, CAMBIARON!!');
-  }, [subastas]);
   return (
     subastas && subastas.length > 0 ? (
       <section className="bg-light page-section container-subastas" id="subastas">

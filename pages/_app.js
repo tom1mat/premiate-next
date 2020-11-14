@@ -11,10 +11,35 @@ import '../styles/App.scss';
 
 const { publicRuntimeConfig: { __API_URL, __SOCKETIO_SERVER } } = getConfig();
 
-const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario }) => {
+const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario: _usuario }) => {
   const auth2 = useAuth2();
   const [sorteos, setSorteos] = useState(_sorteos);
   const [subastas, setSubastas] = useState(_subastas);
+  const [usuario, setUsuario] = useState(_usuario);
+
+  useEffect(() => {
+    const socket = io(__SOCKETIO_SERVER);
+
+    socket.on('connect', function () {
+      socket.on('update-data', function (data) {
+        if (data.subastas) {
+          setSubastas(JSON.parse(data.subastas));
+        }
+
+        if (data.sorteos) {
+          setSorteos(JSON.parse(data.sorteos));
+        }
+
+        if (data.usuario) {
+          const usuarioUpdated = JSON.parse(data.usuario);
+
+          if (usuarioUpdated._id === _usuario._id) {
+            setUsuario(usuarioUpdated);
+          }
+        }
+      });
+    });
+  },[]);
 
   // useEffect(() => {
   //   console.log('UPDATEARON LAS SUBASTAS!!')

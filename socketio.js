@@ -35,7 +35,7 @@ app.post('/update-sockets', (req, res) => {
 });
 
 app.post('/update-data', (req, res) => {
-    const { subastas, sorteos } = req.body;
+    const { subastas, sorteos, usuario } = req.body;
 
     const data = { };
 
@@ -47,6 +47,11 @@ app.post('/update-data', (req, res) => {
     if (sorteos) {
       data.sorteos = JSON.stringify(sorteos);
       console.log('update sorteos!')
+    }
+
+    if (usuario) {
+      data.usuario = JSON.stringify(usuario);
+      console.log('update usuario!' + usuario._id)
     }
 
     io.sockets.emit('update-data', data);

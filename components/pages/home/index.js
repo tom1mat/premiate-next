@@ -14,25 +14,25 @@ import { Context } from '../../../components/context';
 const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
 
 const PageHome = () => {
-  const { subastas: _subastas, sorteos: _sorteos, usuario } = useContext(Context);
-  const [sorteos, setSorteos] = useState(_sorteos);
-  const [subastas, setSubastas] = useState(_subastas);
+  // const { subastas: _subastas, sorteos: _sorteos, usuario } = useContext(Context);
+  const { subastas, sorteos, usuario } = useContext(Context);
+  // const [sorteos, setSorteos] = useState(_sorteos);
+  // const [subastas, setSubastas] = useState(_subastas);
 
   useEffect(() => {
-    const socket = io(__SOCKETIO_SERVER);
+    // const socket = io(__SOCKETIO_SERVER);
 
-    socket.on('connect', function () {
-      console.log('AQUI _app.js!:  connect')
-      socket.on('update-data', function (data) {
-        if (data.subastas) {
-          setSubastas(JSON.parse(data.subastas));
-        }
+    // socket.on('connect', function () {
+    //   socket.on('update-data', function (data) {
+    //     if (data.subastas) {
+    //       setSubastas(JSON.parse(data.subastas));
+    //     }
 
-        if (data.sorteos) {
-          setSorteos(JSON.parse(data.sorteos));
-        }
-      });
-    });
+    //     if (data.sorteos) {
+    //       setSorteos(JSON.parse(data.sorteos));
+    //     }
+    //   });
+    // });
 
     // Collapse Navbar
     const navbarCollapse = function() {

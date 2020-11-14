@@ -77,7 +77,6 @@ const get = async (req, res) => {
       return res.status(200).json(userData);
     }
   } else {
-    console.log(password)
     return res.status(400).json({ message: password ? 'Usuario o contraseña inválido/s' : 'Usuario inexistente' });
   }
 }
