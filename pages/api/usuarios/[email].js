@@ -31,21 +31,23 @@ export default async (req, res) => {
   }
 }
 
-//app.post('/updateUser', (req, res) => {
 const put = async (req, res) => {
   const { query: { email: queryEmail } } = req;
 
   const { name, surname, email } = req.body;
+
+  console.log('req.body: ', req.body);
   let status;
   try {
-    updateModel('users', { email: queryEmail }, { name, surname, email });
+    const res = await updateModel('users', { email: queryEmail }, { name, surname, email });
+    console.log('res: ', res)
     status = 200;
   } catch (error) {
     console.error(error);
     status = 500;
   }
 
-  res.status(status).end();
+  res.status(status).json({});
 }
 
 //app.get('/getUserData', async (req, res) => {

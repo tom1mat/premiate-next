@@ -115,16 +115,17 @@ const _delete = async (req, res) => {
     await deleteModel('subastas', { _id: id });
 
 
-    // Borramos todas las suscripciones a este subasta de todos los usuarios.
-    // const users = await getModel('users');
-    // users.forEach((user) => {
-    //   if (user.subastas) {
-    //     const subastas = { ...user.subastas };
-    //     delete subastas[id];
+    const subastas = await getModel('subastas');
 
-    //     updateModel('users', { _id: user._id }, { subastas })
-    //   }
-    // });
+    const params = {
+      method: 'POST',
+      body: JSON.stringify({
+        subastas: subastas.filter(subasta => subasta.status !== 'INACTIVE'),
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    fetch(`${__SOCKETIO_API}/update-data`, params);
   } catch (error) {
     console.error(error);
     responseStatus = 500;

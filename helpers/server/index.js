@@ -4,7 +4,7 @@ import getConfig from 'next/config';
 import fs from 'fs';
 import { serialize } from 'cookie';
 
-const { publicRuntimeConfig: { __JWTKEY, __IMAGENES_UPLOAD_PATH, __SALTROUNDS } } = getConfig();
+const { publicRuntimeConfig: { __JWTKEY, __IMAGENES_UPLOAD_PATH, __SALTROUNDS, __SOCKETIO_API } } = getConfig();
 
 const getJwtToken = async (data) => {
   return await new Promise((resolve, reject) => {
@@ -82,6 +82,18 @@ const setCookie = (res, name, value) => {
 
 const isAdmin = email => ['tomasmateo10@gmail.com', 'agus.fontova@gmail.com', 'admin@premiate.ar'].includes(email);
 
+const updateUserSockets = (data) => {
+  const params = {
+    method: 'POST',
+    body: JSON.stringify({
+      usuario: data,
+    }),
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  fetch(`${__SOCKETIO_API}/update-data`, params);
+}
+
 module.exports = {
   dbModels: {
     getModelFromString,
@@ -98,4 +110,5 @@ module.exports = {
   deleteImage,
   setCookie,
   isAdmin,
+  updateUserSockets,
 };

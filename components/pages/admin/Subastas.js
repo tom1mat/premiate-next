@@ -86,9 +86,14 @@ const PageSubastas = ({ subastas: _subastas }) => {
     };
 
     if (newSubasta) {
+      const {
+        title: { value: title },
+        status: { value: status },
+        dateString: { value: dateString },
+      } = event.target;
       setSubastas([
         ...subastas,
-        { _id: newSubasta._id, title: event.target.title.value, status: event.target.status.value, image: newSubasta.image }
+        { _id: newSubasta._id, title, status, image: newSubasta.image, dateString,  }
       ]);
       event.target.reset();
     } else {
@@ -175,7 +180,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
             <option value="INACTIVE">INACTIVE</option>
             <option value="FINISHED">FINISHED</option>
           </select>
-          <input type="file" name="image" />
+          <input type="file" name="image" required />
           <button type="submit" disabled={loading}>Crear</button>
         </form>
       </div>

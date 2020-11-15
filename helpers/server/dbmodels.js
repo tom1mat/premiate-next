@@ -2,6 +2,7 @@
 import sorteoModel from '../../models/sorteo';
 import subastaModel from '../../models/subasta';
 import userModel from '../../models/users';
+import publicidadModel from '../../models/publicidad';
 
 const getModelFromString = (model) => {
   switch (model) {
@@ -11,6 +12,8 @@ const getModelFromString = (model) => {
       return subastaModel;
     case 'users':
       return userModel;
+    case 'publicidades':
+      return publicidadModel;
     default:
       return null;
   }

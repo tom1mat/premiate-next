@@ -1,39 +1,36 @@
-import React from 'react';
-
-import { Provider } from 'react-redux';
+import React, { useEffect } from 'react';
 
 import Navbar from '../../commons/Navbar';
 import Footer from '../../commons/Footer';
-import Header from '../../commons/Header';
-import Form from './Form'
+import Form from './Form';
 
-import store from '../../store';
-import useAuth2 from '../../hooks/useAuth2';
-
-const PageAdmin = ({ user }) => {
-  const loading = useAuth2(store, user);
-
-  return (
-    <Provider store={store}>
-      <Navbar />
-      {
-        !loading && (
-          <section className="bg-gradient page-section profile-section">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-12 text-center">
-                  <h2 className="section-heading text-uppercase">Perfil</h2>
-                </div>
-              </div>
-              <div className="row">
-                <Form />
-              </div>
-            </div>
-          </section>
-        )
+const PageAdmin = () => {
+  useEffect(() => {
+    // Collapse Navbar
+    const navbarCollapse = function() {
+      if ($("#mainNav").offset().top > 100) {
+        $("#mainNav").addClass("navbar-shrink");
+      } else {
+        $("#mainNav").removeClass("navbar-shrink");
       }
+    };
+    // Collapse now if page is not at top
+    navbarCollapse();
+    // Collapse the navbar when page is scrolled
+    $(window).scroll(navbarCollapse);
+  }, []);
+  return (
+    <>
+      <Navbar />
+      <section className="bg-gradient page-section profile-section">
+        <div className="container">
+          <div className="row">
+            <Form />
+          </div>
+        </div>
+      </section>
       <Footer />
-    </Provider>
+    </>
   );
 }
 

@@ -187,7 +187,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
             <option value="INACTIVE">INACTIVE</option>
             <option value="FINISHED">FINISHED</option>
           </select>
-          <input type="file" name="image" />
+          <input type="file" name="image" required />
           <button type="submit" disabled={loading}>Crear</button>
         </form>
       </div>

@@ -17,13 +17,16 @@
     "formidable": "^1.2.2",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
+    "mercadopago": "^1.5.0",
     "mongoose": "^5.9.25",
     "next": "9.4.4",
     "node-sass": "^4.14.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-player": "^2.6.2",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "urlencoded-body-parser": "^3.0.0"
   }
 }

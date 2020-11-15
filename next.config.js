@@ -1,6 +1,6 @@
 const withSass = require('@zeit/next-sass')
 
-const { MONGO_USER, MONGO_PASS, DEVELOP, __JWTKEY, __CLIENT_ID_GOOGLE } = process.env;
+const { MONGO_USER, MONGO_PASS, DEVELOP, __JWTKEY, __CLIENT_ID_GOOGLE, MP_ACCESS_TOKEN } = process.env;
 const __MONGO_CONNECTION = `mongodb+srv://${MONGO_USER}:${MONGO_PASS}@premiate-cyijj.mongodb.net/premiate?retryWrites=true&w=majority`;
 
 module.exports = withSass({
@@ -16,7 +16,9 @@ module.exports = withSass({
     __SALTROUNDS: 10,
     __MONGO_CONNECTION,
     __IMAGENES_UPLOAD_PATH: DEVELOP ? 'nginxfiles/imagenes/' : '/home/files-premiate/imagenes/',
-    __IMAGENES_PUBLIC_PATH: 'imagenes/'
+    __IMAGENES_PUBLIC_PATH: 'imagenes/',
+    __VIDEOS_PUBLIC_PATH: 'videos/',
+    MP_ACCESS_TOKEN,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

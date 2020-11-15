@@ -8,21 +8,10 @@ const {
     getModel,
     updateModel,
   },
+  updateUserSockets,
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __SOCKETIO_API } } = getConfig();
-
-const updateUserSocket = (data) => {
-  const params = {
-    method: 'POST',
-    body: JSON.stringify({
-      usuario: data,
-    }),
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  fetch(`${__SOCKETIO_API}/update-data`, params);
-}
 
 export default async (req, res) => {
   const {
@@ -58,7 +47,7 @@ export default async (req, res) => {
       const ganadorViejoData = { subastas: newSubastas, creditsUsed: creditsUsed < 0 ? 0 : creditsUsed };
       await updateModel('users', { _id: ganadorViejoId }, ganadorViejoData );
 
-      updateUserSocket({ ...ganadorViejo, ...ganadorViejoData, jwtToken });
+      updateUserSockets({ ...ganadorViejo, ...ganadorViejoData, jwtToken });
     }
     // 2) Actualizar la subasta
     await updateModel('subastas', { _id: subastaId }, { amount, ganador: user });
@@ -70,7 +59,7 @@ export default async (req, res) => {
     };
     await updateModel('users', { email }, userData);
 
-    updateUserSocket({ ...user, ...userData, jwtToken });
+    updateUserSockets({ ...user, ...userData, jwtToken });
     // 4) Update in all the fronts
     const params = {
       method: 'POST',

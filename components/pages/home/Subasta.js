@@ -32,7 +32,7 @@ const buildStartTimer = (secondsDiff) => {
 const getSecondsDiff = (date) => date.getTime() / 1000 - Date.now() / 1000;
 
 const Subasta = ({ subasta }) => {
-  const { usuario } = useContext(Context);
+  const { usuario, setShowPublicidad, publicidades } = useContext(Context);
 
   const subastaDate = new Date(subasta.dateString);
 
@@ -165,7 +165,17 @@ const Subasta = ({ subasta }) => {
       const diff = Math.abs(localAmount - usuario.credits);
       notification.warning({
         placement: 'bottomRight',
-        message: <>No tienes credits suficientes! Te faltan {diff} <ButtonMercadoPago text="Recargar" amount={diff} /></>,
+        duration: 15,
+        message: (<>
+          No tienes credits suficientes! Te faltan {diff}
+          <ButtonMercadoPago text="Recargar" amount={diff} />
+          {
+            publicidades && publicidades.length > 0 && (
+              <button onClick={() => setShowPublicidad(true)}>Ver publicidad + 100</button>
+            )
+          }
+        </>
+        ),
         onClose: () => setisRaIseButtonDisabled(false),
       });
       return;
@@ -209,10 +219,7 @@ const Subasta = ({ subasta }) => {
     setLocalAmount(value);
   }
 
-  const hasLastSeconds = () => {
-    const onlySeconds = [days, hours, minutes].every(each => each === 0);
-    return onlySeconds && seconds < 1;
-  }
+  const hasLastSeconds = () => days < 1 && hours < 1 && minutes <= 5;
 
   let content = null;
 
@@ -260,6 +267,7 @@ const Subasta = ({ subasta }) => {
   }
 
   return (
+    <>
     <Card
       hoverable
       style={{ width: 240 }}
@@ -269,6 +277,7 @@ const Subasta = ({ subasta }) => {
     >
       {content}
     </Card>
+    </>
   )
 }
 

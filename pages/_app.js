@@ -11,11 +11,13 @@ import '../styles/App.scss';
 
 const { publicRuntimeConfig: { __API_URL, __SOCKETIO_SERVER } } = getConfig();
 
-const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario: _usuario }) => {
+const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario: _usuario, publicidades: _publicidades }) => {
   const auth2 = useAuth2();
   const [sorteos, setSorteos] = useState(_sorteos);
   const [subastas, setSubastas] = useState(_subastas);
   const [usuario, setUsuario] = useState(_usuario);
+  const [publicidades, setPublicidades] = useState(_publicidades);
+  const [showPublicidad, setShowPublicidad] = useState(false);
 
   useEffect(() => {
     const socket = io(__SOCKETIO_SERVER);
@@ -37,39 +39,20 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
             setUsuario(usuarioUpdated);
           }
         }
+
+        if (data.publicidades && data.usuarioId) {
+          if (data.usuarioId === _usuario._id) {
+            console.log('SET PUBLICIDADES!', data.publicidades)
+            setPublicidades(JSON.parse(data.publicidades));
+          }
+        }
       });
     });
-  },[]);
-
-  // useEffect(() => {
-  //   console.log('UPDATEARON LAS SUBASTAS!!')
-  // }, [subastas]);
-
-  // useEffect(() => {
-  //   const socket = io(__SOCKETIO_SERVER);
-
-  //   socket.on('connect', function () {
-  //     console.log('AQUI _app.js!:  connect')
-  //     socket.on('update-data', function (data) {
-  //       if (data.subastas) {
-  //         console.log('_app.js update-data: SUBASSTAS')
-  //         // console.log(JSON.parse(data.subastas));
-  //         // setSubastas(JSON.parse(data.subastas));
-  //         setSubastas([...JSON.parse(data.subastas)]);
-  //         // setSubastas([]);
-  //       }
-
-  //       if (data.sorteos) {
-  //         console.log('_app.js update-data: SORTEOS')
-  //         setSorteos(JSON.parse(data.sorteos));
-  //       }
-  //     });
-  //   });
-  // }, []);
+  }, []);
 
   return (
     <PageTemplate>
-      <Context.Provider value={{ usuario, sorteos, subastas, auth2 }}>
+      <Context.Provider value={{ usuario, sorteos, subastas, auth2, showPublicidad, setShowPublicidad, publicidades }}>
         <Component {...pageProps} />
       </Context.Provider>
     </PageTemplate>
@@ -78,6 +61,7 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
 
 function isAllowed(user, pathname) {
   if (pathname.includes('admin')) return user && user.isAdmin;
+  if (pathname.includes('perfil')) return !!user;
   return true;
 }
 
@@ -90,10 +74,10 @@ MyApp.getInitialProps = async ({ ctx: req }) => {
     return req.res.end();
   }
 
-  const [sorteos, subastas, usuario] = await getInitialData(user ? user.email : null);
+  const [sorteos, subastas, publicidades, usuario] = await getInitialData(user ? user.email : null);
 
   return {
-    sorteos, subastas, usuario
+    sorteos, subastas, publicidades, usuario
   }
 };
 
@@ -102,7 +86,8 @@ export default MyApp;
 const getInitialData = async (email) => {
   const sorteosPromise = fetch(`${__API_URL}/sorteos`);
   const subastasPromise = fetch(`${__API_URL}/subastas`);
-  const promises = [sorteosPromise, subastasPromise];
+  const publicidadesPromise = fetch(`${__API_URL}/publicidades?email=${email}`);
+  const promises = [sorteosPromise, subastasPromise, publicidadesPromise];
 
   if (email) {
     const usuarioPromise = new Promise(async (resolve) => {
@@ -120,14 +105,15 @@ const getInitialData = async (email) => {
 
   return Promise.all(
     promises
-  ).then(async ([sorteosResponse, subastasResponse, usuarioResponse]) => {
+  ).then(async ([sorteosResponse, subastasResponse, publicidadesResponse, usuarioResponse]) => {
     return [
       await sorteosResponse.json(),
       await subastasResponse.json(),
+      await publicidadesResponse.json(),
       usuarioResponse ?
         await usuarioResponse.json ? usuarioResponse.json() : usuarioResponse
         :
-        null
+        null,
     ]
   });
 }

@@ -12,6 +12,7 @@ const usersSchema = new Schema({
     googleData: Object,
     sorteos: Object,
     subastas: Object,
+    publicidades: Object,
 });
 
 let model;

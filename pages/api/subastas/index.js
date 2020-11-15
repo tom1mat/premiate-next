@@ -4,7 +4,7 @@ import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
-const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_API } } = getConfig();
 
 const {
   dbModels: {
@@ -54,12 +54,13 @@ const post = async (req, res) => {
 
   const { status, data } = await new Promise((resolve) => {
     form.parse(req, async (err, fields, files) => {
-      const { title, status } = fields;
+      const { title, status, dateString } = fields;
 
       const image = files.image.path.split('subastas/')[1];
       const data = {
         title,
         status,
+        dateString,
         image,
       };
 
@@ -75,6 +76,18 @@ const post = async (req, res) => {
       resolve({ status: statusResponse, data: newsubasta });
     });
   });
+
+  const subastas = await getModel('subastas');
+
+  const params = {
+    method: 'POST',
+    body: JSON.stringify({
+      subastas: subastas.filter(subasta => subasta.status !== 'INACTIVE'),
+    }),
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  fetch(`${__SOCKETIO_API}/update-data`, params);
 
   return res.status(status).send(data);
 }

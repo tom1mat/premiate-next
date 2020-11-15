@@ -1,6 +1,7 @@
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
+import getConfig from 'next/config';
 
 const {
   dbModels: {
@@ -8,6 +9,8 @@ const {
     getModel,
   },
 } = require('../../../helpers/server');
+
+const { publicRuntimeConfig: { __SOCKETIO_API } } = getConfig();
 
 const isObjectEmpty = (object) => {
   if (!object) return true;
@@ -57,6 +60,19 @@ export default async (req, res) => {
       updateModel('subastas', { _id: subastaId }, { ganador: usuario, status: 'FINISHED' }),
       updateModel('users', { _id: usuario._id }, { subastas: subastasGanador, credits: usuario.credits - subasta.amount }),
     ]);
+
+    const subastas = await getModel('subastas');
+
+    const params = {
+      method: 'POST',
+      body: JSON.stringify({
+        subastas: subastas.filter(subasta => subasta.status !== 'INACTIVE'),
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    fetch(`${__SOCKETIO_API}/update-data`, params);
+
     return res.status(200).json({
       type: 'success',
       message: `El ganador es ${usuario.nombre || ''}  ${usuario.apellido || ''} ${usuario.email || ''}`,

@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
-import getConfig from 'next/config';
-import io from 'socket.io-client';
+import React, { useContext, useEffect } from 'react';
 
 import Navbar from '../../commons/Navbar';
 import Footer from '../../commons/Footer';
@@ -9,31 +7,14 @@ import Services from './Services';
 import Sorteos from './Sorteos';
 import Subastas from './Subastas';
 
+import PublicidadPlayer from '../../commons/PublicidadPlayer';
+
 import { Context } from '../../../components/context';
 
-const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
-
 const PageHome = () => {
-  // const { subastas: _subastas, sorteos: _sorteos, usuario } = useContext(Context);
   const { subastas, sorteos, usuario } = useContext(Context);
-  // const [sorteos, setSorteos] = useState(_sorteos);
-  // const [subastas, setSubastas] = useState(_subastas);
 
   useEffect(() => {
-    // const socket = io(__SOCKETIO_SERVER);
-
-    // socket.on('connect', function () {
-    //   socket.on('update-data', function (data) {
-    //     if (data.subastas) {
-    //       setSubastas(JSON.parse(data.subastas));
-    //     }
-
-    //     if (data.sorteos) {
-    //       setSorteos(JSON.parse(data.sorteos));
-    //     }
-    //   });
-    // });
-
     // Collapse Navbar
     const navbarCollapse = function() {
       if ($("#mainNav").offset().top > 100) {
@@ -56,6 +37,7 @@ const PageHome = () => {
       <Sorteos sorteos={sorteos} usuario={usuario} />
       <Services />
       <Footer />
+      <PublicidadPlayer />
     </>
   );
 }
