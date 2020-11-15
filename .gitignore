@@ -3,6 +3,7 @@
 # Nginx folders
 nginxfiles/imagenes/sorteos/*
 nginxfiles/imagenes/subastas/*
+nginxfiles/videos/*
 
 # dependencies
 /node_modules
