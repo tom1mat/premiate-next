@@ -1,12 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import getConfig from 'next/config';
+import React, { useLayoutEffect } from 'react';
 
-import { Context } from '../context';
-
-const ButtonMercadoPago = ({ amount, text }) => {
-  const { usuario } = useContext(Context);
-
-  useEffect(() => {
+const ButtonMercadoPago = ({ amount, text, email }) => {
+  useLayoutEffect(() => {
     if (typeof document !== 'undefined') {
       const script = document.createElement("script");
       script.id = 'script-mp';
@@ -22,7 +17,7 @@ const ButtonMercadoPago = ({ amount, text }) => {
   return (
     <form action="/" method="POST" id="form-mercadopago">
       <input type="hidden" name="amount" value={amount} />
-      <input type="hidden" name="email" value={usuario.email} />
+      <input type="hidden" name="email" value={email} />
     </form>
   )
 }

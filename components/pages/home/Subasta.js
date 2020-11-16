@@ -168,7 +168,7 @@ const Subasta = ({ subasta }) => {
         duration: 15,
         message: (<>
           No tienes credits suficientes! Te faltan {diff}
-          <ButtonMercadoPago text="Recargar" amount={diff} />
+          <ButtonMercadoPago text="Recargar" amount={diff} email={usuario.email} />
           {
             publicidades && publicidades.length > 0 && (
               <button onClick={() => setShowPublicidad(true)}>Ver publicidad + 100</button>
