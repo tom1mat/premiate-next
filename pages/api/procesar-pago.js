@@ -40,7 +40,6 @@ export default async (req, res) => {
 
     const successPaymentsStatus = [201, 'approved'];
     if (successPaymentsStatus.includes(payment.status)) {
-      console.log('si 1')
       const user = await getModel('users', { email });
       const userUpdateData = { credits: parseInt(user.credits) + parseInt(amount) };
       await updateModel('users', { email }, userUpdateData);

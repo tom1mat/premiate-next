@@ -82,9 +82,9 @@ const ProfileForm = () => {
             Guardar
           </Button>
         </Form>
-        <ButtonMercadoPago text="Cargar 100 credits" amount={100} />
-        <ButtonMercadoPago text="Cargar 500 credits" amount={500} />
-        <ButtonMercadoPago text="Cargar 1000 credits" amount={1000} />
+        <ButtonMercadoPago text="Cargar 100 credits" amount={100} email={usuario.email} />
+        <ButtonMercadoPago text="Cargar 500 credits" amount={500} email={usuario.email} />
+        <ButtonMercadoPago text="Cargar 1000 credits" amount={1000} email={usuario.email} />
       </Card>
     </>
   );

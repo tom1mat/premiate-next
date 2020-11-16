@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import getConfig from 'next/config';
 import io from 'socket.io-client';
+import parse from 'urlencoded-body-parser';
+import { notification } from 'antd';
 
 import { Context } from '../components/context';
 import PageTemplate from '../components/PageTemplate';
@@ -11,7 +13,7 @@ import '../styles/App.scss';
 
 const { publicRuntimeConfig: { __API_URL, __SOCKETIO_SERVER } } = getConfig();
 
-const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario: _usuario, publicidades: _publicidades }) => {
+const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, usuario: _usuario, publicidades: _publicidades, paymentStatus }) => {
   const auth2 = useAuth2();
   const [sorteos, setSorteos] = useState(_sorteos);
   const [subastas, setSubastas] = useState(_subastas);
@@ -42,12 +44,30 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
 
         if (data.publicidades && data.usuarioId) {
           if (data.usuarioId === _usuario._id) {
-            console.log('SET PUBLICIDADES!', data.publicidades)
             setPublicidades(JSON.parse(data.publicidades));
           }
         }
       });
     });
+
+    if (typeof document !== 'undefined') {
+      if (paymentStatus) {
+        const successPaymentsStatus = [201, 'approved'];
+        if (successPaymentsStatus.includes(paymentStatus)) {
+          notification.success({
+            placement: 'bottomRight',
+            duration: 10,
+            message: 'Se han cargado los credits!',
+          });
+        } else {
+          notification.error({
+            placement: 'bottomRight',
+            duration: 10,
+            message: 'No se han pudido cargar los credits',
+          });
+        }
+      }
+    }
   }, []);
 
   return (
@@ -68,16 +88,53 @@ function isAllowed(user, pathname) {
 MyApp.getInitialProps = async ({ ctx: req }) => {
   const cookies = parseCookies(req.req);
   const user = cookies ? await getUserFromCookie(cookies) : false;
+  let paymentStatus = null;
 
   if (!isAllowed(user, req.pathname)) {
     req.res.writeHead(302, { Location: '/' });
     return req.res.end();
   }
 
+  if (req.req.method === 'POST') {
+    const {
+      token,
+      issuer_id,
+      installments,
+      payment_method_id,
+      amount,
+      email,
+    } = await parse(req.req);
+
+    const body = JSON.stringify({
+      token,
+      issuer_id,
+      installments,
+      payment_method_id,
+      amount,
+      email,
+    });
+
+    const params = {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    };
+
+    const response = await fetch(`${__API_URL}/procesar-pago`, params);
+
+    paymentStatus = 500;
+    if (response.status === 200) {
+      const data = await response.json();
+      paymentStatus = data.paymentStatus;
+    }
+  }
+
   const [sorteos, subastas, publicidades, usuario] = await getInitialData(user ? user.email : null);
 
   return {
-    sorteos, subastas, publicidades, usuario
+    sorteos, subastas, publicidades, usuario, paymentStatus
   }
 };
 
