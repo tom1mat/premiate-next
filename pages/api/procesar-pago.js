@@ -29,8 +29,8 @@ export default async (req, res) => {
       token: token.length ? token[0] : token,
       description: 'Premiate carga de credits',
       installments: installments.length ? parseInt(installments[0]) : parseInt(installments),
-      payment_method_id: payment_method_id.length ? parseInt(payment_method_id[0]) : parseInt(payment_method_id),
-      issuer_id: issuer_id.length ? parseInt(issuer_id[0]) : parseInt(issuer_id),
+      payment_method_id: payment_method_id.length ? parseInt(payment_method_id[0]) || '1' : parseInt(payment_method_id) || '1',
+      issuer_id: issuer_id.length ? issuer_id[0] : issuer_id,
       payer: {
         email: 'prueba@gmail.com',
       },
