@@ -26,16 +26,15 @@ export default async (req, res) => {
 
     const payment_data = {
       transaction_amount: parseInt(amount),
-      token: token.length ? token[0] : token,
+      token: Array.isArray(token) ? token[0] : token,
       description: 'Premiate carga de credits',
-      installments: installments.length ? parseInt(installments[0]) : parseInt(installments),
-      payment_method_id: payment_method_id.length ? parseInt(payment_method_id[0]) || '1' : parseInt(payment_method_id) || '1',
-      issuer_id: issuer_id.length ? issuer_id[0] : issuer_id,
+      installments: Array.isArray(installments) ? parseInt(installments[0]) : parseInt(installments),
+      payment_method_id: Array.isArray(payment_method_id) ? payment_method_id[0] || 'master' : payment_method_id || 'master',
+      issuer_id: Array.isArray(issuer_id) ? issuer_id[0] : issuer_id,
       payer: {
         email: 'prueba@gmail.com',
       },
     };
-
     console.log(JSON.stringify(payment_data));
 
     const payment = await mercadopago.payment.save(payment_data);
