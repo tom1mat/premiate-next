@@ -36,6 +36,8 @@ export default async (req, res) => {
       },
     };
 
+    console.log(JSON.stringify(payment_data));
+
     const payment = await mercadopago.payment.save(payment_data);
 
     const successPaymentsStatus = [201, 'approved'];
