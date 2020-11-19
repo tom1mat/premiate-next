@@ -16,7 +16,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
     setIsLoading(true);
     const body = JSON.stringify({
       jwtToken: usuario.jwtToken,
-      sorteoId: sorteo.id,
+      sorteoId: sorteo._id,
       email: usuario.email
     });
     const res = await fetch(`${__API_URL}/sorteos/suscribe`, {
@@ -46,7 +46,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   const onUnSuscribe = async () => {
     const body = JSON.stringify({
       jwtToken: usuario.jwtToken,
-      sorteoId: sorteo.id,
+      sorteoId: sorteo._id,
       email: usuario.email,
     });
     const res = await fetch(`${__API_URL}/sorteos/unsuscribe`, {

@@ -25,6 +25,8 @@ export default async (req, res) => {
     const user = await getModel('users', { email });
     const sorteos = user.sorteos || {};
     const sorteo = await getModel('sorteos', { _id: sorteoId });
+
+    console.log('sorteoId: ', sorteoId);
     sorteos[sorteoId] = sorteo;
 
     await updateModel('users', { email }, { sorteos });
