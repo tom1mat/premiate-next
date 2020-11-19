@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 const {
   generateHash
-} = require('../../helpers/server';
+} = require('../../helpers/server');
 
 const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
 
