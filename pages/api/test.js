@@ -1,6 +1,6 @@
 import getConfig from 'next/config';
 import bcrypt from 'bcrypt';
-)
+
 const {
   generateHash
 } = require('../../helpers/server';
