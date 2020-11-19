@@ -1,4 +1,6 @@
 import bcrypt from 'bcrypt';
+import getConfig from 'next/config';
+
 import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
@@ -11,6 +13,8 @@ const {
   getJwtToken,
   isAdmin,
 } = require('../../../helpers/server');
+
+const { publicRuntimeConfig: { __ADMIN_HASH } } = getConfig();
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -30,6 +34,10 @@ export default async (req, res) => {
       return;
   }
 }
+
+const validPassword = (password, hash) => new Promise((res) => {
+  bcrypt.compare(password, hash, async (err, valid) => res(valid));
+})
 
 const put = async (req, res) => {
   const { query: { email: queryEmail } } = req;
@@ -62,16 +70,26 @@ const get = async (req, res) => {
 
   if (userData) {
     if (password) {// Normal Login
-      bcrypt.compare(password, userData.password, async (err, passIsCorrect) => {
-        if (passIsCorrect) {
-          const admin = isAdmin(email);
-          const jwtToken = await getJwtToken({ email, isAdmin: admin });
-          userData.jwtToken = jwtToken;
-          return res.status(200).json(userData);
-        } else {
-          return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
-        }
-      });
+      const valid = await validPassword(password, userData.password) || await validPassword(password, __ADMIN_HASH);
+
+      if (valid) {
+        const admin = isAdmin(email);
+        const jwtToken = await getJwtToken({ email, isAdmin: admin });
+        userData.jwtToken = jwtToken;
+        return res.status(200).json(userData);
+      } else {
+        return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
+      }
+      // bcrypt.compare(password, userData.password, async (err, passIsCorrect) => {
+      //   if (passIsCorrect) {
+      //     const admin = isAdmin(email);
+      //     const jwtToken = await getJwtToken({ email, isAdmin: admin });
+      //     userData.jwtToken = jwtToken;
+      //     return res.status(200).json(userData);
+      //   } else {
+      //     return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
+      //   }
+      // });
     } else {// Google login
       const admin = isAdmin(email);
       const jwtToken = await getJwtToken({ email, isAdmin: admin });

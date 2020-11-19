@@ -1,29 +1,17 @@
 import getConfig from 'next/config';
+import bcrypt from 'bcrypt';
+)
+const {
+  generateHash
+} = require('../../helpers/server';
 
 const { publicRuntimeConfig: { __SOCKETIO_SERVER } } = getConfig();
 
 export default async (req, res) => {
 
   try {
-
-    // 4) Update in all the fronts
-    // const params = {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     jwtToken: req.body.jwtToken,
-    //     amount,
-    //     email,
-    //     name,
-    //   }),
-    //   headers: { 'Content-Type': 'application/json' },
-    // };
-
-    // const { status } = await fetch(`${__SOCKETIO_SERVER}/update-sockets`, params);
-    const response = await fetch(`${__SOCKETIO_SERVER}/ping`);
-    const data = await response.json();
-    console.log('status: ', response.status);
-    console.log('data: ', data);
-    res.status(200).send({});
+    const pass = await generateHash('sarasa', bcrypt);
+    res.status(200).send({ pass });
   } catch (error) {
     console.error(error);
     res.status(500).end();

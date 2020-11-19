@@ -19,6 +19,7 @@ module.exports = withSass({
     __IMAGENES_PUBLIC_PATH: 'imagenes/',
     __VIDEOS_PUBLIC_PATH: 'videos/',
     MP_ACCESS_TOKEN,
+    __ADMIN_HASH: '$2b$10$BLl1NblfBTtHJUieV/Hvyeqy.aboa5kYFgemLtIuuMy65gUZf3Ex6',
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
