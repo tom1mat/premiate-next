@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { notification } from 'antd';
+import { notification, Button } from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  GiftOutlined,
+} from '@ant-design/icons';
+
 import getConfig from 'next/config';
 
 import { useFetchData } from '../../../helpers/client';
@@ -29,6 +36,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
 
   const updateSorteo = async event => {
     event.preventDefault();
+
     setLoading(true);
 
     const formData = new FormData(event.target);
@@ -70,8 +78,8 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   };
 
   const createSorteo = async event => {
-    event.persist();
     event.preventDefault();
+    event.persist();
     setLoading(true);
 
     const formData = new FormData(event.target);
@@ -180,7 +188,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   return (
     <>
       <div>
-        <form id="formCreate" method="POST" onSubmit={createSorteo} encType="multipart/form-data">
+        <form id="formCreate" onSubmit={createSorteo} encType="multipart/form-data">
           <input name="sorteo" required />
           <select name="status">
             <option value="ACTIVE">ACTIVE</option>
@@ -188,7 +196,9 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
             <option value="FINISHED">FINISHED</option>
           </select>
           <input type="file" name="image" required />
-          <button type="submit" disabled={loading}>Crear</button>
+          <Button type="primary" disabled={loading} shape="round" icon={<PlusOutlined />} size="default">
+            Crear
+          </Button>
         </form>
       </div>
       <div>
@@ -205,9 +215,23 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
                 </select>
                 <input type="hidden" value={_id} name="_id" />
                 <input type="file" name="image" />
-                <button type="submit" disabled={loading}>Editar</button>
-                <button value={_id} onClick={deleteSorteo} disabled={loading}>Eliminar</button>
-                <button value={_id} onClick={sortear} disabled={loading}>Sortear</button>
+                <Button
+                  // onClick={(ev) => console.log(ev.currentTarget.parentElement.submit())}
+                  htmlType="submit"
+                  type="primary"
+                  disabled={loading}
+                  shape="round"
+                  icon={<EditOutlined />}
+                  size="default"
+                >
+                  Editar
+                </Button>
+                <Button value={_id} onClick={deleteSorteo} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
+                  Eliminar
+                </Button>
+                <Button value={_id} onClick={sortear} type="primary" disabled={loading} shape="round" icon={<GiftOutlined />} size="default">
+                  Sortear
+                </Button>
               </form>
               {
                 ganador ? (
