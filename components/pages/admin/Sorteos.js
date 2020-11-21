@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { notification, Button } from 'antd';
+import React, { useState } from 'react';
+import { notification, Button, Input } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
@@ -9,11 +9,12 @@ import {
 
 import getConfig from 'next/config';
 
+import SelectStatus from './SelectStatus';
 import { useFetchData } from '../../../helpers/client';
 
 const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
 
-const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
+const PageSorteos = ({ sorteos: _sorteos }) => {
   const [sorteos, setSorteos] = useState(_sorteos);
   const [loading, setLoading] = useState(false);
   const fetchData = useFetchData();
@@ -81,6 +82,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
     event.preventDefault();
     event.persist();
     setLoading(true);
+    console.log(event.target)
 
     const formData = new FormData(event.target);
 
@@ -118,7 +120,8 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
     if (confirm) {
       setLoading(true);
 
-      const target = event.target;
+      const target = event.currentTarget;
+
       const _id = target.value;
       const response = await fetchData(`sorteos/${_id}`, {}, 'DELETE');
       const notif = {
@@ -126,7 +129,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
         message: `El sorteo ha sido eliminado correctamente`
       };
 
-      const form = target.parentNode;
+      const form = target.parentNode.parentNode;
       form.parentNode.removeChild(form);
 
       if (response) {
@@ -166,7 +169,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
     const sorteoId = ev.target.value;
     try {
       const { type, message, usuarioGanador } = await fetchData(`sorteos/sortear`, { sorteoId }, 'POST');
-      console.log( type, message)
+      console.log(type, message)
 
       if (type === 'success') {
         populateGanador(sorteoId, usuarioGanador);
@@ -188,51 +191,57 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
   return (
     <>
       <div>
-        <form id="formCreate" onSubmit={createSorteo} encType="multipart/form-data">
-          <input name="sorteo" required />
-          <select name="status">
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="INACTIVE">INACTIVE</option>
-            <option value="FINISHED">FINISHED</option>
-          </select>
-          <input type="file" name="image" required />
-          <Button type="primary" disabled={loading} shape="round" icon={<PlusOutlined />} size="default">
+        <form className="form" id="formCreate" onSubmit={createSorteo}>
+          <div className="form__title">Nuevo sorteo</div>
+          <Input name="sorteo" required placeholder="Nombre del sorteo" />
+          <div className="form__container">
+            <SelectStatus />
+            <input type="file" name="image" required />
+          </div>
+          {/* <input name="sorteo" required /> */}
+          <Button
+            className="form__button-create"
+            type="primary"
+            disabled={loading}
+            shape="round"
+            icon={<PlusOutlined />}
+            size="default"
+            htmlType="submit"
+          >
             Crear
           </Button>
         </form>
       </div>
       <div>
+        <div style={{ fontSize: 18, marginLeft: '10%' }}>Sorteos ingresados</div>
         {
           sorteos.map(({ _id, sorteo, image, status, users, ganador }) => (
-            <React.Fragment key={_id}>
-              <form key={_id} onSubmit={updateSorteo} method="POST">
-                {image && <img width="50" height="50" alt="sorteo" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${image}`} />}
-                <input defaultValue={sorteo} name="sorteo" required />
-                <select name="status" defaultValue={status}>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="FINISHED">FINISHED</option>
-                </select>
-                <input type="hidden" value={_id} name="_id" />
-                <input type="file" name="image" />
+            <form key={_id} className="sorteos-grid" key={_id} onSubmit={updateSorteo} method="POST">
+              {image && <img width="50" height="50" alt="sorteo" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${image}`} />}
+              <Input style={{ height: 32 }} defaultValue={sorteo} name="sorteo" required placeholder="Nombre del sorteo" />
+              {/* <input defaultValue={sorteo} name="sorteo" required /> */}
+              <SelectStatus defaultValue={status} />
+              <input type="hidden" value={_id} name="_id" />
+              <input type="file" name="image" />
+              <div className="button-container">
                 <Button
-                  // onClick={(ev) => console.log(ev.currentTarget.parentElement.submit())}
                   htmlType="submit"
                   type="primary"
                   disabled={loading}
                   shape="round"
                   icon={<EditOutlined />}
                   size="default"
+                  className="button-edit"
                 >
                   Editar
                 </Button>
                 <Button value={_id} onClick={deleteSorteo} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
                   Eliminar
-                </Button>
+                  </Button>
                 <Button value={_id} onClick={sortear} type="primary" disabled={loading} shape="round" icon={<GiftOutlined />} size="default">
                   Sortear
                 </Button>
-              </form>
+              </div>
               {
                 ganador ? (
                   <div>Ganador: {ganador.email}</div>
@@ -251,7 +260,7 @@ const PageSorteos = ({ sorteos: _sorteos, reFetchSorteos }) => {
                     )
                   )
               }
-            </React.Fragment>
+            </form>
           ))
         }
       </div>

@@ -3,7 +3,7 @@ import { notification } from 'antd';
 
 import { useFetchData } from '../../../helpers/client';
 
-const PageUsuarios = ({ usuarios: _usuarios, reFetchUsuarios }) => {
+const PageUsuarios = ({ usuarios: _usuarios }) => {
   const [usuarios, setUsuarios] = useState(_usuarios);
   const [loading, setLoading] = useState(false);
   const fetchData = useFetchData();
@@ -16,20 +16,30 @@ const PageUsuarios = ({ usuarios: _usuarios, reFetchUsuarios }) => {
     event.preventDefault();
     setLoading(true);
 
-    const formData = new FormData(event.target);
+    const _id = event.target._id;
 
-    if (!formData.get('password')) formData.delete('password');
+    // const formData = new FormData(event.target);
+    const {
+      name: { value: name },
+      surname: { value: surname },
+      email: { value: email },
+      password: { value: password },
+      credits: { value: credits },
+    } = event.target;
 
-    const data = await fetchData('usuario', formData, 'PUT', 'formData');
+    const userData = { name, surname, email, password, credits };
+
+    // if (!formData.get('password')) formData.delete('password');
+    if (!userData.password) delete userData.password;
+
+    const data = await fetchData(`usuarios/${_id}`, userData, 'PUT');
 
     const notif = {
       type: 'info',
       message: `El usuario se ha editado correctamente`
     };
 
-    if (data) {
-      reFetchUsuarios();
-    } else {
+    if (!data) {
       notif.type = 'warning';
       notif.message = `No se pudo editar el usuario`;
     }
@@ -51,7 +61,7 @@ const PageUsuarios = ({ usuarios: _usuarios, reFetchUsuarios }) => {
     if (confirm) {
       setLoading(true);
 
-      const _id = event.target.value;
+      const _id = event.currentTarget.value;
       const response = await fetchData('usuario', { _id }, 'DELETE');
       const notif = {
         type: 'info',

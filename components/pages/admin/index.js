@@ -41,7 +41,7 @@ const Slider = ({ page, sorteos, subastas, usuarios }) => {
   }
 
   return (
-    <Layout>
+    <Layout style={{ height: '100%' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[String(pages[page] || '1')]}>

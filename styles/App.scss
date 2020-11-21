@@ -9,6 +9,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#__next {
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
@@ -194,4 +198,62 @@ code {
 
 .site-layout .site-layout-background {
   background: #fff;
+}
+
+.form {
+  padding: 5% 10%;
+  background: #fbfbfb;
+
+  select {
+    height: 32px;
+  }
+
+  &__title {
+    font-size: 18px;
+  }
+
+  &__button-create {
+    display: block !important;
+    margin: auto;
+  }
+
+  &__container {
+    margin: 3% 0;
+    display: flex;
+  }
+}
+
+.sorteos-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr fit-content(100%);
+  padding: 3% 1%;
+  border-bottom: 1px solid gray;
+
+  &:first-of-type {
+    border-top: 1px solid gray;
+  }
+
+  select {
+    height: 32px;
+  }
+}
+
+.subastas-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr fit-content(100%);
+  padding: 3% 1%;
+  border-bottom: 1px solid gray;
+
+  &:first-of-type {
+    border-top: 1px solid gray;
+  }
+
+  select {
+    height: 32px;
+  }
+}
+
+.button-edit {
+  background: rgb(95, 211, 95) !important;
+  border-color: rgb(95, 211, 95) !important;
 }

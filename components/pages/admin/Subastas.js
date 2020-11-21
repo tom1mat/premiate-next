@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { notification } from 'antd';
+import { notification, Button, Input } from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  GiftOutlined,
+} from '@ant-design/icons';
 import getConfig from 'next/config';
 
+import SelectStatus from './SelectStatus';
 import { useFetchData } from '../../../helpers/client';
 
 const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
@@ -93,7 +100,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
       } = event.target;
       setSubastas([
         ...subastas,
-        { _id: newSubasta._id, title, status, image: newSubasta.image, dateString,  }
+        { _id: newSubasta._id, title, status, image: newSubasta.image, dateString, }
       ]);
       event.target.reset();
     } else {
@@ -118,7 +125,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
     if (confirm) {
       setLoading(true);
 
-      const target = event.target;
+      const target = event.currentTarget;
       const _id = target.value;
       const response = await fetchData(`subastas/${_id}`, {}, 'DELETE');
       const notif = {
@@ -172,42 +179,63 @@ const PageSubastas = ({ subastas: _subastas }) => {
   return (
     <>
       <div>
-        <form id="formCreate" method="POST" onSubmit={createSubasta} encType="multipart/form-data">
-          <input name="title" required />
-          <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" />
-          <select name="status">
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="INACTIVE">INACTIVE</option>
-            <option value="FINISHED">FINISHED</option>
-          </select>
-          <input type="file" name="image" required />
-          <button type="submit" disabled={loading}>Crear</button>
+        <form className="form" id="formCreate" method="POST" onSubmit={createSubasta} encType="multipart/form-data">
+          <div className="form__title">Nueva subasta</div>
+          <Input name="title" required placeholder="Nombre de la subasta" />
+          <div className="form__container">
+            <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" />
+            <input type="file" name="image" required />
+            <SelectStatus />
+          </div>
+          <Button
+            className="form__button-create"
+            type="primary"
+            disabled={loading}
+            shape="round"
+            icon={<PlusOutlined />}
+            size="default"
+            htmlType="submit"
+          >
+            Crear
+          </Button>
         </form>
       </div>
       <div>
         {
           subastas.map(({ _id, title, dateString, image, status, ganador }) => (
             <React.Fragment key={_id}>
-              <form key={_id} onSubmit={updateSubasta} method="POST">
+              <form className="subastas-grid" key={_id} onSubmit={updateSubasta} method="POST">
                 {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
-                <input defaultValue={title} name="title" required/>
+                <Input style={{ height: 32 }} defaultValue={title} name="title" required placeholder="Nombre de la subasta" />
                 <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" defaultValue={dateString} />
-                <select name="status" defaultValue={status}>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="FINISHED">FINISHED</option>
-                </select>
-                <input type="hidden" value={_id} name="_id" />
+                <SelectStatus defaultValue={status} />
                 <input type="file" name="image" />
-                <button type="submit" disabled={loading}>Editar</button>
-                <button value={_id} onClick={deleteSubasta} disabled={loading}>Eliminar</button>
-                <button value={_id} onClick={finalizarSubasta} disabled={loading}>Finalizar</button>
+                <div className="button-container">
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={loading}
+                    shape="round"
+                    icon={<EditOutlined />}
+                    size="default"
+                    className="button-edit"
+                  >
+                    Editar
+                  </Button>
+                  <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
+                    Eliminar
+                  </Button>
+                  <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={loading} shape="round" icon={<GiftOutlined />} size="default">
+                    Sortear
+                  </Button>
+                </div>
+                <input type="hidden" value={_id} name="_id" />
+                {
+                  ganador && (
+                    <div>Ganador: {ganador.email}</div>
+                  )
+                }
               </form>
-              {
-                ganador && (
-                  <div>Ganador: {ganador.email}</div>
-                )
-              }
             </React.Fragment>
           ))
         }

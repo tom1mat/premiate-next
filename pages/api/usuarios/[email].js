@@ -12,6 +12,7 @@ const {
   },
   getJwtToken,
   isAdmin,
+  generateHash,
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __ADMIN_HASH } } = getConfig();
@@ -42,12 +43,18 @@ const validPassword = (password, hash) => new Promise((res) => {
 const put = async (req, res) => {
   const { query: { email: queryEmail } } = req;
 
-  const { name, surname, email } = req.body;
+  const { name, surname, email, credits, password } = req.body;
 
-  console.log('req.body: ', req.body);
+  const data = { name, surname, email, credits };
+
+  if (password) {
+    const hash = await generateHash(password, bcrypt);
+    data.password = hash;
+  }
+
   let status;
   try {
-    const res = await updateModel('users', { email: queryEmail }, { name, surname, email });
+    const res = await updateModel('users', { email: queryEmail }, data);
     console.log('res: ', res)
     status = 200;
   } catch (error) {
@@ -55,7 +62,7 @@ const put = async (req, res) => {
     status = 500;
   }
 
-  res.status(status).json({});
+  return res.status(status).json({});
 }
 
 //app.get('/getUserData', async (req, res) => {
