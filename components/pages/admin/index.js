@@ -35,16 +35,18 @@ const Slider = ({ page, sorteos, subastas, usuarios }) => {
         content = <Usuarios usuarios={usuarios} />;
         break;
       default:
-        content = <Sorteos sorteos={sorteos} />;
+        content = 'Bienvenido!';
         break;
     }
+  } else {
+    content = 'Bienvenido!';
   }
 
   return (
     <Layout style={{ height: '100%' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={[String(pages[page] || '1')]}>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={[String(pages[page] || null)]}>
           <Menu.Item key="1" icon={<UserOutlined />}><a href="/admin/sorteos">Sorteos</a></Menu.Item>
           <Menu.Item key="2" icon={<VideoCameraOutlined />}><a href="/admin/subastas">Subastas</a></Menu.Item>
           <Menu.Item key="3" icon={<UploadOutlined />}><a href="/admin/usuarios">Usuarios</a></Menu.Item>
