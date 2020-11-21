@@ -154,7 +154,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
   const finalizarSubasta = async (ev) => {
     ev.preventDefault();
     ev.persist();
-    const subastaId = ev.target.value;
+    const subastaId = ev.currentTarget.value;
     try {
       const { type, message } = await fetchData(`subastas/finalizar`, { subastaId }, 'POST');
 
@@ -225,8 +225,8 @@ const PageSubastas = ({ subastas: _subastas }) => {
                   <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
                     Eliminar
                   </Button>
-                  <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={loading} shape="round" icon={<GiftOutlined />} size="default">
-                    Sortear
+                  <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={status === 'FINISHED' || loading} shape="round" icon={<GiftOutlined />} size="default">
+                    Finalizar
                   </Button>
                 </div>
                 <input type="hidden" value={_id} name="_id" />

@@ -36,12 +36,18 @@ export default async (req, res) => {
 
   const { sorteoId } = req.body;
 
+  console.log('sorteoId: ', sorteoId);
+
   const sorteo = await getModel('sorteos', { _id: sorteoId });
 
-  if (!sorteo) return res.status(500).json({ type: 'error', message: 'Error, no existe el sorteo' });
+  if (!sorteo) return res.status(200).json({ type: 'error', message: 'Error, no existe el sorteo' });
 
   if (!sorteo.users || isObjectEmpty(sorteo.users)) {
     return res.status(200).json({ type: 'warning', message: 'No se puede sortear, no hay ningún usuario inscripto' });
+  }
+
+  if (sorteo.status === 'FINISHED') {
+    return res.status(200).json({ type: 'warning', message: 'El sorteo ya ha finalizado' });
   }
 
   const ganador = getRandomUser(sorteo.users);

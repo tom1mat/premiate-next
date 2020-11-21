@@ -38,6 +38,11 @@ export default async (req, res) => {
     if (!subasta.ganador || isObjectEmpty(subasta.ganador)) {
       return res.status(200).json({ type: 'warning', message: 'No se puede finalizar, no hay ningún ganador' });
     }
+
+    if (sorteo.status === 'FINISHED') {
+      return res.status(200).json({ type: 'warning', message: 'La subasta ya ha finalizado' });
+    }
+
     const usuario = await getModel('users', { _id: subasta.ganador._id });
 
     let subastasGanador = {};

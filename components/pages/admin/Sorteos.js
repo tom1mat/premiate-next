@@ -166,10 +166,10 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
 
   const sortear = async (ev) => {
     ev.preventDefault();
-    const sorteoId = ev.target.value;
+    const sorteoId = ev.currentTarget.value;
+
     try {
       const { type, message, usuarioGanador } = await fetchData(`sorteos/sortear`, { sorteoId }, 'POST');
-      console.log(type, message)
 
       if (type === 'success') {
         populateGanador(sorteoId, usuarioGanador);
@@ -180,6 +180,7 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
         message,
       });
     } catch (error) {
+      console.log(type, message)
       console.log(error)
       notification.error({
         placement: 'bottomRight',
@@ -238,7 +239,7 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
                 <Button value={_id} onClick={deleteSorteo} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
                   Eliminar
                   </Button>
-                <Button value={_id} onClick={sortear} type="primary" disabled={loading} shape="round" icon={<GiftOutlined />} size="default">
+                <Button value={_id} onClick={sortear} type="primary" disabled={status === 'FINISHED' || loading} shape="round" icon={<GiftOutlined />} size="default">
                   Sortear
                 </Button>
               </div>
