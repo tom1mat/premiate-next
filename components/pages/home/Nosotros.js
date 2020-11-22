@@ -13,7 +13,7 @@ export default () => (
           </div>
         </div>
       </div>
-      <div className="row text-center">
+      <div className="founders-container">
         <div className="col-md-6 details-container">
           <img className="img-circled" src="img/img-tomi.jpeg" />
           <p className="text-muted">
@@ -23,7 +23,7 @@ export default () => (
           </p>
           <img className="img-trabajo" src="img/logo_ml.png" />
         </div>
-        <div className="col-md-6 details-container">
+        <div className="details-container">
           <img className="img-circled" src="img/img-agus.jpeg" />
           {/* <span className="fa-stack fa-4x">
             <i className="fas fa-circle fa-stack-2x text-primary"></i>

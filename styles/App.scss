@@ -160,11 +160,6 @@ code {
   background: rgba(255, 255, 255, 0.9) !important;
 }
 
-.details-container {
-  max-width: 290px;
-  margin: auto;
-}
-
 .google-avatar {
   margin: 25px auto auto !important;
   width: auto !important;
@@ -198,6 +193,21 @@ code {
 .card-subasta,
 .card-sorteo {
   margin-bottom: 35px !important;
+}
+
+.founders-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.details-container {
+  max-width: 290px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .img-circled {
