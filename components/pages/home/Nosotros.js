@@ -10,20 +10,20 @@ export default () => (
             <p>Somos dos amigos que nos conocimos en la facultad en el año 2016 con el fin de desarrollar, producto de nuestra amistad y pasión por emprender, Premiate. Una aplicación innovadora en la que se pueden ganar premios simplemente por participar en sorteos y subastas con un solo click.</p>
             <p>No sólo el azar determinará si los competidores son merecedores de un premio, sino que también ofrecemos la oportunidad de participar de distintas subastas donde los participantes podrán poner en juego sus monedas virtuales. Quien más monedas esté dispuesto a pagar, será el ganador.</p>
             <p>Parlantes de música, consolas de videojuegos, experiencias únicas y más premios pueden ser tuyos.</p>
-      </div>
+          </div>
         </div>
       </div>
       <div className="row text-center">
-        <div className="col-md-6">
-          <img className="img-circled" src="img/img-tomi.jpeg"/>
+        <div className="col-md-6 details-container">
+          <img className="img-circled" src="img/img-tomi.jpeg" />
           <p className="text-muted">
             Tomas Mateo<br />
             26 años - CABA.<br />
-            Técnico en Sistemas y Web developer en<br />
+            Técnico en Sistemas y Desarrollador de Software en<br />
           </p>
           <img className="img-trabajo" src="img/logo_ml.png" />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 details-container">
           <img className="img-circled" src="img/img-agus.jpeg" />
           {/* <span className="fa-stack fa-4x">
             <i className="fas fa-circle fa-stack-2x text-primary"></i>
