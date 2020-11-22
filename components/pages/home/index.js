@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import Navbar from '../../commons/Navbar';
 import Footer from '../../commons/Footer';
 import Header from './Header';
-import Services from './Services';
+import Nosotros from './Nosotros';
 import Sorteos from './Sorteos';
 import Subastas from './Subastas';
 
@@ -33,9 +33,9 @@ const PageHome = () => {
     <>
       <Navbar />
       <Header />
+      <Nosotros />
       <Subastas subastas={subastas} />
       <Sorteos sorteos={sorteos} usuario={usuario} />
-      <Services />
       <Footer />
       <PublicidadPlayer />
     </>

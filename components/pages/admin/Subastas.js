@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { notification, Button, Input } from 'antd';
 import {
   PlusOutlined,
@@ -12,6 +12,13 @@ import SelectStatus from './SelectStatus';
 import { useFetchData } from '../../../helpers/client';
 
 const { publicRuntimeConfig: { __IMAGENES_PUBLIC_PATH } } = getConfig();
+
+const getValidationErrorMsg = (dateString) => {
+  const dateStamp = new Date(dateString).getTime();
+  if (!dateStamp) return 'Formato de fecha inválido';
+  if (dateStamp < new Date().getTime()) return 'La fecha debe ser futura';
+  return false;
+}
 
 const PageSubastas = ({ subastas: _subastas }) => {
   const [subastas, setSubastas] = useState(_subastas);
@@ -36,6 +43,14 @@ const PageSubastas = ({ subastas: _subastas }) => {
 
   const updateSubasta = async event => {
     event.preventDefault();
+    const dateErrorMessage = getValidationErrorMsg(event.target.dateString.value);
+    if (dateErrorMessage) {
+      return notification.warning({
+        placement: 'bottomRight',
+        message: dateErrorMessage,
+      });
+    }
+
     setLoading(true);
 
     const formData = new FormData(event.target);
@@ -65,6 +80,9 @@ const PageSubastas = ({ subastas: _subastas }) => {
       if (data.image) {
         updateImageSubasta(id, data.image);
       }
+    } else if(response.status === 405) {
+      notif.type = 'warning';
+      notif.message = `La fecha debe ser futura`;
     } else {
       notif.type = 'warning';
       notif.message = `No se pudo editar la subasta ${title}`;
@@ -82,6 +100,13 @@ const PageSubastas = ({ subastas: _subastas }) => {
   const createSubasta = async event => {
     event.persist();
     event.preventDefault();
+    const dateErrorMessage = getValidationErrorMsg(event.target.dateString.value);
+    if (dateErrorMessage) {
+      return notification.warning({
+        placement: 'bottomRight',
+        message: dateErrorMessage,
+      });
+    }
     setLoading(true);
 
     const formData = new FormData(event.target);

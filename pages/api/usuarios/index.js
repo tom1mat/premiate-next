@@ -92,6 +92,7 @@ const post = async (req, res) => {
       email,
       password: hash,
       credits: __STARTINGCREDITS,
+      name: email.split('@')[0],
     }
 
     if (createModel('users', data)) {

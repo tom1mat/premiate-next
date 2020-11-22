@@ -53,6 +53,8 @@ const put = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       const { title, status, dateString } = fields;
 
+      const subasta = await getModel('subastas', { _id: id });
+
       const data = {
         title,
         status,
@@ -65,7 +67,6 @@ const put = async (req, res) => {
         image = files.image.path.split('subastas/')[1];
         data.image = image;
 
-        const subasta = await getModel('subastas', { _id: id });
         if (subasta.image) {
           deleteImage(`subastas/${subasta.image}`);
         }

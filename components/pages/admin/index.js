@@ -4,8 +4,10 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
+  DollarCircleOutlined,
+  RollbackOutlined,
+  GiftOutlined,
+
 } from '@ant-design/icons';
 
 import Sorteos from './Sorteos';
@@ -47,16 +49,17 @@ const Slider = ({ page, sorteos, subastas, usuarios }) => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[String(pages[page] || null)]}>
-          <Menu.Item key="1" icon={<UserOutlined />}><a href="/admin/sorteos">Sorteos</a></Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}><a href="/admin/subastas">Subastas</a></Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}><a href="/admin/usuarios">Usuarios</a></Menu.Item>
+          <Menu.Item key="1" icon={<GiftOutlined />}><a href="/admin/sorteos">Sorteos</a></Menu.Item>
+          <Menu.Item key="2" icon={<DollarCircleOutlined />}><a href="/admin/subastas">Subastas</a></Menu.Item>
+          <Menu.Item key="3" icon={<UserOutlined />}><a href="/admin/usuarios">Usuarios</a></Menu.Item>
+          <Menu.Item key="4" icon={<RollbackOutlined />}><a href="/">Volver a la web</a></Menu.Item>
         </Menu>
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }}>
           {
             React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-              className: 'trigger',
+              className: 'trigger toggle-menu',
               onClick: toggle,
             })
           }

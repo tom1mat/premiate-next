@@ -103,7 +103,7 @@ img::-moz-selection {
 }
 
 #mainNav {
-  background-color: #212529;
+  background-color: rgb(196, 98, 151);
 }
 
 #mainNav .navbar-toggler {

@@ -9,6 +9,7 @@ const {
   dbModels: {
     getModel,
     updateModel,
+    deleteModel,
   },
   getJwtToken,
   isAdmin,
@@ -29,8 +30,10 @@ export default async (req, res) => {
       return get(req, res);
     case 'PUT':
       return put(req, res);
+    case 'DELETE':
+      return _delete(req, res);
     default:
-      res.setHeader('Allow', ['GET', 'PUT', 'POST']);
+      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
       res.status(405).end(`Method ${method} Not Allowed`);
       return;
   }
@@ -53,6 +56,8 @@ const put = async (req, res) => {
   }
 
   let status;
+  console.log('queryEmail: ', queryEmail)
+  console.log('data: ', data)
   try {
     const res = await updateModel('users', { email: queryEmail }, data);
     console.log('res: ', res)
@@ -65,7 +70,6 @@ const put = async (req, res) => {
   return res.status(status).json({});
 }
 
-//app.get('/getUserData', async (req, res) => {
 const get = async (req, res) => {
   const {
     query: { email, password },
@@ -87,16 +91,6 @@ const get = async (req, res) => {
       } else {
         return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
       }
-      // bcrypt.compare(password, userData.password, async (err, passIsCorrect) => {
-      //   if (passIsCorrect) {
-      //     const admin = isAdmin(email);
-      //     const jwtToken = await getJwtToken({ email, isAdmin: admin });
-      //     userData.jwtToken = jwtToken;
-      //     return res.status(200).json(userData);
-      //   } else {
-      //     return res.status(400).json({ message: 'Usuario o contraseña inválido/s' });
-      //   }
-      // });
     } else {// Google login
       const admin = isAdmin(email);
       const jwtToken = await getJwtToken({ email, isAdmin: admin });
@@ -107,3 +101,21 @@ const get = async (req, res) => {
     return res.status(400).json({ message: password ? 'Usuario o contraseña inválido/s' : 'Usuario inexistente' });
   }
 }
+
+const _delete = async (req, res) => {
+  const {
+    query: { email },
+  } = req;
+
+  let responseStatus = 200;
+  try {
+    await deleteModel('users', { email });
+
+  } catch (error) {
+    console.error(error);
+    responseStatus = 500;
+  }
+
+  return res.status(responseStatus).send({});
+}
+

@@ -120,7 +120,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
       <Card
         hoverable
         style={{ width: 240 }}
-        className="portfolio-item"
+        className="portfolio-item card-sorteo"
         cover={<img alt="parlante" width="240" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${sorteo.image}`} />}
         title={sorteo.sorteo}
         onClick={!sorteo.ganador ? handleClick : null}

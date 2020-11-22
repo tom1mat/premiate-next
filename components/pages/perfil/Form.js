@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import getConfig from 'next/config';
 import {
   Form,
   Input,
@@ -11,8 +10,6 @@ import {
 import ButtonMercadoPago from '../../commons/ButtonMercadoPago';
 import { Context } from '../../context';
 import { useFetchData } from '../../../helpers/client';
-
-const { publicRuntimeConfig: { __API_URL } } = getConfig();
 
 const formItemLayout = {
   labelCol: {

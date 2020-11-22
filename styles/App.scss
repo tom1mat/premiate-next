@@ -1,4 +1,5 @@
 @import '~antd/dist/antd.css';
+@import './media-queries.scss';
 
 body {
   margin: 0;
@@ -126,6 +127,10 @@ code {
   }
 }
 
+.sonrisa {
+  width: 75%;
+}
+
 .nav-link:active {
   outline: none;
 }
@@ -136,6 +141,10 @@ code {
 
 .profile-section {
   padding-top: 10%;
+}
+
+.img-trabajo {
+  width: 150px;
 }
 
 .card-profile {
@@ -175,6 +184,57 @@ code {
   z-index: 9999;
   width: 100%;
   height: 100%;
+}
+
+.cards-container {
+  justify-content: space-around;
+}
+
+.card-subasta,
+.card-sorteo {
+  margin-bottom: 35px !important;
+}
+
+.img-circled {
+  border-radius: 50%;
+  width: 300px;
+  margin: 5% 0;
+}
+
+.ver-publicidad {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid white;
+  box-shadow: 6px 7px 25px -5px rgba(0,0,0,.75);
+  position: fixed;
+  width: 58px;
+  height: 60px;
+  bottom: 40px;
+  left: 40px;
+  background-image: linear-gradient(to right bottom, rgb(200, 119, 163), rgb(53, 161, 218));
+  color: #fff;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 35px;
+  z-index: 100;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    border-width: 2px;
+
+    .anticon {
+      transform: rotate(-20deg);
+    }
+  }
+
+  .anticon {
+    font-size: 30px;
+    transition: all 500ms;
+  }
 }
 
 // Admin panel
@@ -266,4 +326,8 @@ code {
 .button-edit {
   background: rgb(95, 211, 95) !important;
   border-color: rgb(95, 211, 95) !important;
+}
+
+.toggle-menu {
+  margin-left: 20px;
 }

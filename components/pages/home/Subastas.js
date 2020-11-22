@@ -13,7 +13,7 @@ const Subastas = ({ subastas }) => {
               <h3 className="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
             </div>
           </div>
-          <div className="row">
+          <div className="row cards-container">
             {subastas.map((subasta) => (<Subasta key={subasta._id} subasta={subasta} />))}
           </div>
         </div>

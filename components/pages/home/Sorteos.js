@@ -15,7 +15,7 @@ const Sorteos = ({ usuario, sorteos }) => {
             <h3 className="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
           </div>
         </div>
-        <div className="row">
+        <div className="row cards-container">
           {
             sorteos.map((sorteo, index) => <Sorteo sorteo={sorteo} key={sorteo._id} id={sorteo._id} titulo={sorteo.sorteo} isSuscribed={!!userSorteos[sorteo._id]} />)
           }
