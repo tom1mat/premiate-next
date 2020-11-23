@@ -46,9 +46,9 @@ const validPassword = (password, hash) => new Promise((res) => {
 const put = async (req, res) => {
   const { query: { email: queryEmail } } = req;
 
-  const { name, surname, email, credits, password } = req.body;
+  const { name, surname, email, credits, password, resetPublicidad } = req.body;
 
-  const data = { name, surname, email, credits };
+  let data = { name, surname, email, credits };
 
   if (password) {
     const hash = await generateHash(password, bcrypt);
@@ -56,9 +56,9 @@ const put = async (req, res) => {
   }
 
   let status;
-  console.log('queryEmail: ', queryEmail)
-  console.log('data: ', data)
+
   try {
+    if (resetPublicidad) data = { publicidades: { } };
     const res = await updateModel('users', { email: queryEmail }, data);
     console.log('res: ', res)
     status = 200;

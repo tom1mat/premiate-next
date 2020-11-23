@@ -3,6 +3,7 @@ import { notification, Button, Input } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
+  RetweetOutlined,
 } from '@ant-design/icons';
 
 import { useFetchData } from '../../../helpers/client';
@@ -58,7 +59,7 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
   const deleteusuario = async event => {
     event.persist();
     event.preventDefault();
-    const confirm = window.confirm("Seguro que desea eliminar el usuario?");
+    const confirm = window.confirm('Seguro que desea eliminar el usuario?');
 
     if (confirm) {
       setLoading(true);
@@ -89,6 +90,37 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
     }
   };
 
+  const reiniciarPublicidad = async event => {
+    event.persist();
+    event.preventDefault();
+    const confirm = window.confirm('Seguro que desea reiniciar la publicidad?');
+
+    if (confirm) {
+      setLoading(true);
+      const target = event.currentTarget;
+
+      const emailUpdate = target.value;
+      const response = await fetchData(`usuarios/${emailUpdate}`, { resetPublicidad: true }, 'PUT');
+      const notif = {
+        type: 'info',
+        message: 'La publicidad se ha reiniciado'
+      };
+
+      if (!response) {
+        notif.type = 'warning';
+        notif.message = 'Error, no se pudo reiniciar la publicidad';
+      }
+
+      const { type, message } = notif;
+
+      setLoading(false);
+      notification[type]({
+        placement: 'bottomRight',
+        message: message,
+      });
+    }
+  };
+
   return (
     <div>
       {
@@ -101,8 +133,6 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
             <input placeholder="Apellido" defaultValue={surname} type="text" name="surname" />
             <input placeholder="Credits" defaultValue={credits} type="number" name="credits" />
             <input type="hidden" value={email} name="emailUpdate" />
-            {/* <button type="submit" disabled={loading}>Editar</button>
-            <button value={email} onClick={deleteusuario} disabled={loading}>Eliminar</button> */}
             <Button
               htmlType="submit"
               type="primary"
@@ -116,6 +146,9 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
             </Button>
             <Button value={email} onClick={deleteusuario} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
               Eliminar
+            </Button>
+            <Button value={email} onClick={reiniciarPublicidad} type="primary" disabled={loading} shape="round" icon={<RetweetOutlined />} size="default">
+              Reiniciar publicidad
             </Button>
           </form>
         ))
