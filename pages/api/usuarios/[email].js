@@ -61,7 +61,7 @@ const put = async (req, res) => {
   try {
     if (resetPublicidad) data = { publicidades: { } };
     await updateModel('users', { email: queryEmail }, data);
-    const user = await getModel('user', { email: queryEmail });
+    const user = await getModel('users', { email: queryEmail });
 
     updateUserSockets(user);
 
