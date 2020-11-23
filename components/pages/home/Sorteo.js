@@ -109,10 +109,12 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
 
   if (sorteo.status === 'FINISHED') {
     if (sorteo.ganador) {
-      <>
-        <p>Finalizado</p>
-        <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
-      </>
+      content = (
+        <>
+          <p>Finalizado</p>
+          <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
+        </>
+      );
     } else {
       content = <p>Finalizado</p>;
     }
