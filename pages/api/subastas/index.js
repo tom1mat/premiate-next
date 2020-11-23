@@ -62,6 +62,7 @@ const post = async (req, res) => {
         status,
         dateString,
         image,
+        amount: 0,
       };
 
       let statusResponse = 200;

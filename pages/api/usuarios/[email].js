@@ -14,6 +14,7 @@ const {
   getJwtToken,
   isAdmin,
   generateHash,
+  updateUserSockets,
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __ADMIN_HASH } } = getConfig();
@@ -59,8 +60,11 @@ const put = async (req, res) => {
 
   try {
     if (resetPublicidad) data = { publicidades: { } };
-    const res = await updateModel('users', { email: queryEmail }, data);
-    console.log('res: ', res)
+    await updateModel('users', { email: queryEmail }, data);
+    const user = getModel('user', { email: queryEmail });
+
+    updateUserSockets(user);
+
     status = 200;
   } catch (error) {
     console.error(error);
