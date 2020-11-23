@@ -39,7 +39,7 @@ export default async (req, res) => {
       return res.status(200).json({ type: 'warning', message: 'No se puede finalizar, no hay ningún ganador' });
     }
 
-    if (sorteo.status === 'FINISHED') {
+    if (subasta.status === 'FINISHED') {
       return res.status(200).json({ type: 'warning', message: 'La subasta ya ha finalizado' });
     }
 
