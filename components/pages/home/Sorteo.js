@@ -105,6 +105,21 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
       );
   }
 
+  let content = null;
+
+  if (sorteo.status === 'FINISHED') {
+    if (sorteo.ganador) {
+      <>
+        <p>Finalizado</p>
+        <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
+      </>
+    } else {
+      content = <p>Finalizado</p>;
+    }
+  } else {
+    content = isSuscribed ? <p>Inscripto</p> : <p className="text-muted">Participar</p>;
+  }
+
   return (
     <>
       <Modal
@@ -127,19 +142,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
       >
         <div className="portfolio-caption">
           <h4>{sorteo.sorteo}</h4>
-          {
-            sorteo.ganador ? (
-              <>
-                <p>Finalizado</p>
-                <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
-              </>
-            ) : (
-              isSuscribed ?
-                <p>Inscripto</p>
-                :
-                <p className="text-muted">Participar</p>
-            )
-          }
+          {content}
         </div>
       </Card>
     </>

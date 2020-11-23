@@ -27,6 +27,7 @@ const ProfileForm = () => {
   const fetchData = useFetchData();
 
   const handleSubmit = async e => {
+    console.log('acaaa')
     e.preventDefault();
 
     const {
@@ -65,7 +66,7 @@ const ProfileForm = () => {
         className="card-profile"
         cover={avatar ? <img alt="avatar" className="google-avatar" src={avatar} /> : null}
       >
-        <Form {...formItemLayout} onSubmit={handleSubmit} className="profile-form" hideRequiredMark>
+        <form onSubmit={handleSubmit} className="profile-form">
           <Form.Item label="Nombre">
             <Input name="name" defaultValue={name} />
           </Form.Item>
@@ -78,10 +79,8 @@ const ProfileForm = () => {
           <Button className="card-profile__submit" type="primary" htmlType="submit">
             Guardar
           </Button>
-        </Form>
+        </form>
         <ButtonMercadoPago text="Cargar 100 credits" amount={100} email={usuario.email} />
-        <ButtonMercadoPago text="Cargar 500 credits" amount={500} email={usuario.email} />
-        <ButtonMercadoPago text="Cargar 1000 credits" amount={1000} email={usuario.email} />
       </Card>
     </>
   );

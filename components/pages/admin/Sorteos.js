@@ -65,8 +65,13 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
         updateImageSorteo(id, data.image);
       }
     } else {
+      const data = await response.json();
       notif.type = 'warning';
-      notif.message = `No se pudo editar el sorteo ${sorteo}`;
+      if (data && data.message) {
+        notif.message = data.message;
+      } else {
+        notif.message = `No se pudo editar el sorteo ${sorteo}`;
+      }
     }
 
     const { type, message } = notif;
@@ -86,21 +91,21 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
 
     const formData = new FormData(event.target);
 
-    const newSorteo = await fetchData('sorteos', formData, 'POST', 'formData');
+    const data = await fetchData('sorteos', formData, 'POST', 'formData');
     const notif = {
       type: 'info',
       message: `El sorteo se ha creado correctamente`
     };
 
-    if (newSorteo) {
+    if (data.isError) {
+      notif.type = 'warning';
+      notif.message = data.message || 'No se pudo crear el sorteo';
+    } else {
       setSorteos([
         ...sorteos,
-        { _id: newSorteo._id, sorteo: event.target.sorteo.value, status: event.target.status.value, image: newSorteo.image }
+        { _id: data._id, sorteo: event.target.sorteo.value, status: event.target.status.value, image: data.image }
       ]);
       event.target.reset();
-    } else {
-      notif.type = 'warning';
-      notif.message = `No se pudo crear el sorteo`;
     }
 
     const { type, message } = notif;
@@ -132,9 +137,7 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
       const form = target.parentNode.parentNode;
       form.parentNode.removeChild(form);
 
-      if (response) {
-        // reFetchSorteos();
-      } else {
+      if (!response) {
         notif.type = 'warning';
         notif.message = `No se pudo eliminar el sorteo ${_id}`;
       }

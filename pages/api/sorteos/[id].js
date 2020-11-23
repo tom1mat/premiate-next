@@ -52,10 +52,17 @@ const put = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       const { sorteo, status } = fields;
 
+
       const data = {
         sorteo,
         status,
       };
+
+      const sorteos = await getModel('sorteos');
+
+      if (sorteos.some(s => String(s._id) !== id && s.sorteo === sorteo)) {
+        return resolve({ status: 400, data: { message: 'No puede haber más de un sorteo con el mismo nombre' } });
+      }
 
       let image = null;
 
