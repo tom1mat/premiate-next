@@ -227,7 +227,11 @@ const Subasta = ({ subasta }) => {
     content = (
       <>
         <p>Finalizada</p>
-        <p>{`Ganador ${subasta.ganador.email.split('@')[0]}`}</p>
+        {
+          subasta.ganador && (
+            <p>{`Ganador ${subasta.ganador.email.split('@')[0]}`}</p>
+          )
+        }
       </>
     )
   } else {
