@@ -39,7 +39,6 @@ export default async (req, res) => {
     // 1) Eliminar el que era el ganador (le saco la subasta de su lista y le restauro los creditos)
     if (subasta.ganador) {
       if (subasta.ganador._id === user._id) {
-        console.log('Error, se esta mandando 2 veces el update');
         return res.status(400).send(userData);
       }
       const ganadorViejoId = subasta.ganador._id;
@@ -47,7 +46,7 @@ export default async (req, res) => {
       const newSubastas = ganadorViejo.subastas ? { ...ganadorViejo.subastas } : { };
       delete newSubastas[subastaId];
 
-      const credits = user.credits + subasta.amount;
+      const credits = ganadorViejo.credits + subasta.amount;
       const ganadorViejoData = { subastas: newSubastas, credits: credits < 0 ? 0 : credits };
       // const creditsUsed = user.creditsUsed - subasta.amount;
       // const ganadorViejoData = { subastas: newSubastas, creditsUsed: creditsUsed < 0 ? 0 : creditsUsed };
