@@ -43,7 +43,7 @@ export default async (req, res) => {
       const newSubastas = ganadorViejo.subastas ? { ...ganadorViejo.subastas } : { };
       delete newSubastas[subastaId];
 
-      const credits = user.credits - subasta.amount;
+      const credits = user.credits + subasta.amount;
       const ganadorViejoData = { subastas: newSubastas, credits: credits < 0 ? 0 : credits };
       // const creditsUsed = user.creditsUsed - subasta.amount;
       // const ganadorViejoData = { subastas: newSubastas, creditsUsed: creditsUsed < 0 ? 0 : creditsUsed };
