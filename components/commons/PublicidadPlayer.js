@@ -11,6 +11,7 @@ const { publicRuntimeConfig: { __VIDEOS_PUBLIC_PATH } } = getConfig();
 const PublicidadPlayer = () => {
   const { setShowPublicidad, showPublicidad, publicidades, usuario } = useContext(Context);
   const [playing, setPlaying] = useState(false);
+  const [ready, setReady] = useState(false);
   const [current, setCurrent] = useState(() => {
     if (!publicidades || !publicidades.length || publicidades.length === 0) return null;
     return publicidades[0];
@@ -54,6 +55,7 @@ const PublicidadPlayer = () => {
     }
 
     setPlaying(false);
+    setReady(false);
     setCurrent(null);
 
     publicidades.forEach((publicidad, index) => {
@@ -63,15 +65,19 @@ const PublicidadPlayer = () => {
     });
   }
 
+  const handleReady = () => setReady(true);
+
   if (!showPublicidad || !current) return null;
 
   if (showPublicidad && current) {
     return (
       <div className="publicidad-player">
+        {!ready && <div>Cargando...</div>}
         <ReactPlayer
           className="publicidad-player__video"
           url={`${__VIDEOS_PUBLIC_PATH}${current.video}`}
           playing={playing}
+          onReady={handleReady}
           onEnded={handleOnEnded}
           controls={false}
           playsinline={true}
