@@ -12,7 +12,7 @@ import PublicidadPlayer from '../../commons/PublicidadPlayer';
 import { Context } from '../../../components/context';
 
 const PageHome = () => {
-  const { subastas, sorteos, usuario } = useContext(Context);
+  const { subastas, sorteos, usuario, showPublicidad } = useContext(Context);
 
   useEffect(() => {
     // Collapse Navbar
@@ -28,6 +28,14 @@ const PageHome = () => {
     // Collapse the navbar when page is scrolled
     $(window).scroll(navbarCollapse);
   }, []);
+
+  useEffect(() => {
+    if (showPublicidad) {
+      document.getElementsByTagName('body')[0].style.position = 'fixed';
+    } else {
+      document.getElementsByTagName('body')[0].style.position = '';
+    }
+  }, [showPublicidad]);
 
   return (
     <>

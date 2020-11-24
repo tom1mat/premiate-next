@@ -35,14 +35,6 @@ const PublicidadPlayer = () => {
   }, [showPublicidad]);
 
   useEffect(() => {
-    if (showPublicidad) {
-      document.getElementsByTagName('body')[0].style.position = 'fixed';
-    } else {
-      document.getElementsByTagName('body')[0].style.position = '';
-    }
-  }, [showPublicidad]);
-
-  useEffect(() => {
     if (publicidades.length > 0) {
       setCurrent(publicidades[0]);
     } else {
