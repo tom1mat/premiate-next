@@ -152,20 +152,20 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
     }
   };
 
-  const populateGanador = (sorteoId, ganador) => {
-    const sorteosConGanador = sorteos.map(sorteo => {
-      if (sorteo._id === sorteoId) {
-        return {
-          ...sorteo,
-          ganador,
-        };
-      } else {
-        return sorteo;
-      }
-    });
+  // const populateGanador = (sorteoId, ganador) => {
+  //   const sorteosConGanador = sorteos.map(sorteo => {
+  //     if (sorteo._id === sorteoId) {
+  //       return {
+  //         ...sorteo,
+  //         ganador,
+  //       };
+  //     } else {
+  //       return sorteo;
+  //     }
+  //   });
 
-    setSorteos(sorteosConGanador);
-  };
+  //   setSorteos(sorteosConGanador);
+  // };
 
   const sortear = async (ev) => {
     ev.preventDefault();
@@ -175,7 +175,8 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
       const { type, message, usuarioGanador } = await fetchData(`sorteos/sortear`, { sorteoId }, 'POST');
 
       if (type === 'success') {
-        populateGanador(sorteoId, usuarioGanador);
+        window.location.reload();
+        // populateGanador(sorteoId, usuarioGanador);
       }
 
       notification[type]({

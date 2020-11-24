@@ -61,6 +61,8 @@ const put = async (req, res) => {
         dateString,
       };
 
+      throw new Error('que solo deje crear una sola subasta activa');
+
       let image = null;
 
       if (files.image) {
