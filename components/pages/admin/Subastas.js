@@ -80,7 +80,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
       if (data.image) {
         updateImageSubasta(id, data.image);
       }
-    } else if(response.status === 405) {
+    } else if (response.status === 405) {
       notif.type = 'warning';
       notif.message = `La fecha debe ser futura`;
     } else {
@@ -227,42 +227,46 @@ const PageSubastas = ({ subastas: _subastas }) => {
       </div>
       <div>
         {
-          subastas.map(({ _id, title, dateString, image, status, ganador }) => (
-            <React.Fragment key={_id}>
-              <form className="subastas-grid" key={_id} onSubmit={updateSubasta} method="POST">
-                {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
-                <Input style={{ height: 32 }} defaultValue={title} name="title" required placeholder="Nombre de la subasta" />
-                <input placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" defaultValue={dateString} />
-                <SelectStatus defaultValue={status} />
-                <input type="file" name="image" />
-                <div className="button-container">
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    disabled={loading}
-                    shape="round"
-                    icon={<EditOutlined />}
-                    size="default"
-                    className="button-edit"
-                  >
-                    Editar
+          subastas.map(({ _id, title, dateString, image, status, ganador }) => {
+            const isFinished = status === 'FINISHED';
+            return (
+              <React.Fragment key={_id}>
+                <form className="subastas-grid" key={_id} onSubmit={updateSubasta} method="POST">
+                  {image && <img width="50" height="50" alt="subasta" src={`${__IMAGENES_PUBLIC_PATH}subastas/${image}`} />}
+                  <Input disabled={isFinished} style={{ height: 32 }} defaultValue={title} name="title" required placeholder="Nombre de la subasta" />
+                  <input disabled={isFinished} placeholder="AAAA-MM-DDTHH:MM:SS" type="datetime-local" name="dateString" defaultValue={dateString} />
+                  <SelectStatus disabled={isFinished} defaultValue={status} />
+                  <input disabled={isFinished} type="file" name="image" />
+                  <div className="button-container">
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      disabled={loading || isFinished}
+                      shape="round"
+                      icon={<EditOutlined />}
+                      size="default"
+                      className="button-edit"
+                    >
+                      Editar
                   </Button>
-                  <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
-                    Eliminar
+                    <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
+                      Eliminar
                   </Button>
-                  <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={status === 'FINISHED' || loading} shape="round" icon={<GiftOutlined />} size="default">
-                    Finalizar
+                    <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={isFinished || loading} shape="round" icon={<GiftOutlined />} size="default">
+                      Finalizar
                   </Button>
-                </div>
-                <input type="hidden" value={_id} name="_id" />
-                {
-                  ganador && (
-                    <div>Ganador: {ganador.email}</div>
-                  )
-                }
-              </form>
-            </React.Fragment>
-          ))
+                  </div>
+                  <input type="hidden" value={_id} name="_id" />
+                  {
+                    ganador && (
+                      <div>Ganador: {ganador.email}</div>
+                    )
+                  }
+                </form>
+              </React.Fragment>
+            )
+          }
+          )
         }
       </div>
     </>

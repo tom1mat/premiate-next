@@ -137,7 +137,6 @@ const Subasta = ({ subasta }) => {
 
   const handleRaise = async (e) => {
     e.preventDefault();
-    // creditsUsed: Los credits que el usuario aposto, pero que todavia no gano porque no termino la apuesta.
     // localAmount: los credits que el usuario apuesta por cada apuesta.
     // amount: los credits de la subasta.
     // userCredits: Los credits que tiene el usuario en su cuenta.

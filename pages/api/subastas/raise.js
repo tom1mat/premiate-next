@@ -48,8 +48,6 @@ export default async (req, res) => {
 
       const credits = ganadorViejo.credits + subasta.amount;
       const ganadorViejoData = { subastas: newSubastas, credits: credits < 0 ? 0 : credits };
-      // const creditsUsed = user.creditsUsed - subasta.amount;
-      // const ganadorViejoData = { subastas: newSubastas, creditsUsed: creditsUsed < 0 ? 0 : creditsUsed };
       await updateModel('users', { _id: ganadorViejoId }, ganadorViejoData );
 
       updateUserSockets({ ...ganadorViejo, ...ganadorViejoData, jwtToken });
@@ -57,10 +55,8 @@ export default async (req, res) => {
     // 2) Actualizar la subasta
     await updateModel('subastas', { _id: subastaId }, { amount, ganador: user });
     // 3) Actualizar los creditos del ganador y agregamos la subasta a la lista
-    // const creditsUsed = (user.creditsUsed || 0) + amount;
     const credits = user.credits - amount;
     const userData = {
-      // creditsUsed,
       credits: credits < 0 ? 0 : credits,
       subastas: user.subastas ? { ...user.subastas, [subastaId]: subasta } : { [subastaId]: subasta },
     };
