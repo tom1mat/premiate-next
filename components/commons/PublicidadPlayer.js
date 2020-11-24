@@ -5,6 +5,7 @@ import { notification } from 'antd';
 
 import { Context } from '../context';
 import { useFetchData } from '../../helpers/client';
+import { set } from 'mongoose';
 
 const { publicRuntimeConfig: { __VIDEOS_PUBLIC_PATH } } = getConfig();
 
@@ -27,6 +28,14 @@ const PublicidadPlayer = () => {
       });
     }
   }, [showPublicidad]);
+
+  useEffect(() => {
+    if (publicidades.length > 0) {
+      setCurrent(publicidades[0]);
+    } else {
+      setCurrent(null);
+    }
+  }, [publicidades]);
 
   const handleOnEnded = async () => {
     const ok = fetchData(`publicidades/viewed`, { publicidadId: current._id, usuarioId: usuario._id }, 'POST');

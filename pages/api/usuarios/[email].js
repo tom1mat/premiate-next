@@ -17,7 +17,7 @@ const {
   updateUserSockets,
 } = require('../../../helpers/server');
 
-const { publicRuntimeConfig: { __ADMIN_HASH } } = getConfig();
+const { publicRuntimeConfig: { __ADMIN_HASH, __SOCKETIO_API } } = getConfig();
 
 export default async (req, res) => {
   await useProtected(req, res);
@@ -62,6 +62,20 @@ const put = async (req, res) => {
     if (resetPublicidad) data = { publicidades: { } };
     await updateModel('users', { email: queryEmail }, data);
     const user = await getModel('users', { email: queryEmail });
+
+    if (resetPublicidad) {
+      const publicidades = await getModel('publicidades');
+      const params = {
+        method: 'POST',
+        body: JSON.stringify({
+          publicidades,
+          usuarioId: user._id,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      };
+
+      fetch(`${__SOCKETIO_API}/update-data`, params);
+    }
 
     updateUserSockets(user);
 

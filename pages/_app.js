@@ -42,7 +42,10 @@ const MyApp = ({ Component, pageProps, sorteos: _sorteos, subastas: _subastas, u
           }
         }
         if (data.publicidades && data.usuarioId) {
+          console.log(1)
           if (data.usuarioId === _usuario._id) {
+            console.log(2)
+            console.log(JSON.parse(data.publicidades))
             setPublicidades(JSON.parse(data.publicidades));
           }
         }
