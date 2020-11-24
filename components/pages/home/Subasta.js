@@ -45,7 +45,6 @@ const Subasta = ({ subasta }) => {
   const [amount, setAmount] = useState(subasta.amount);
   const [localAmount, setLocalAmount] = useState(amount + 1);
   const [isRaiseButtonDisabled, setisRaIseButtonDisabled] = useState(false);
-  const [creditsUsed, setCreditsUsed] = useState((usuario && usuario.creditsUsed) ? usuario.creditsUsed : 0);
   const [ganadorEmail, setGanadorEmail] = useState(subasta.ganador ? subasta.ganador.email : null);
   const [finishing, setFinishing] = useState(false);
 
@@ -202,7 +201,6 @@ const Subasta = ({ subasta }) => {
 
     if (status === 200) {
       const data = await response.json();
-      setCreditsUsed(data.creditsUsed);
       notification.success({
         placement: 'bottomRight',
         message: 'Has podido aumentar exitosamente!',

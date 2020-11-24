@@ -8,7 +8,7 @@ const usersSchema = new Schema({
     surname: String,
     avatar: String,
     credits: Number,
-    creditsUsed: Number,
+    // creditsUsed: Number,
     googleData: Object,
     sorteos: Object,
     subastas: Object,
