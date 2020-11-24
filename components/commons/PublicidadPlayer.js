@@ -5,7 +5,6 @@ import { notification } from 'antd';
 
 import { Context } from '../context';
 import { useFetchData } from '../../helpers/client';
-import { set } from 'mongoose';
 
 const { publicRuntimeConfig: { __VIDEOS_PUBLIC_PATH } } = getConfig();
 
@@ -20,12 +19,26 @@ const PublicidadPlayer = () => {
 
   useEffect(() => {
     setPlaying(showPublicidad);
-    if (!current && showPublicidad) {
+    if (!usuario) {
+      notification.info({
+        placement: 'bottomRight',
+        duration: 10,
+        message: 'Debes ingresar primero!',
+      });
+    } else if (!current && showPublicidad) {
       notification.info({
         placement: 'bottomRight',
         duration: 10,
         message: 'Ya has visto todas las publicidades disponibles!',
       });
+    }
+  }, [showPublicidad]);
+
+  useEffect(() => {
+    if (showPublicidad) {
+      document.getElementsByTagName('body')[0].style.position = 'fixed';
+    } else {
+      document.getElementsByTagName('body')[0].style.position = '';
     }
   }, [showPublicidad]);
 
@@ -68,6 +81,8 @@ const PublicidadPlayer = () => {
           url={`${__VIDEOS_PUBLIC_PATH}${current.video}`}
           playing={playing}
           onEnded={handleOnEnded}
+          controls={false}
+          playsinline={true}
         />
         {
           !playing && (

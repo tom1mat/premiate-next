@@ -56,7 +56,7 @@ const post = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       const { title, status, dateString } = fields;
 
-      throw new Error('que solo deje crear una sola subasta activa');
+      // throw new Error('que solo deje crear una sola subasta activa');
 
       const image = files.image.path.split('subastas/')[1];
       const data = {
