@@ -37,10 +37,11 @@ const get = async (req, res) => {
   try {
     const email = req.query.email;
 
-    const publicidades = await getModel('publicidades');
     const usuario = await getModel('users', { email });
 
     if (!usuario) return res.status(200).send([]);
+
+    const publicidades = await getModel('publicidades');
 
     const publicidadesNoVistas = publicidades.filter(publicidad => {
       if (!usuario.publicidades) return true;

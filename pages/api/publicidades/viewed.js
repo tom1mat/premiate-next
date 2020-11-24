@@ -30,28 +30,31 @@ export default async (req, res) => {
   }
 
   try {
-    const user = await getModel('users', { _id: usuarioId });
+    const usuario = await getModel('users', { _id: usuarioId });
 
-    const userPublicidades = user.publicidades || { };
+    const userPublicidades = usuario.publicidades || { };
     userPublicidades[publicidadId] = true;
-    const updateUserData = { publicidades: userPublicidades, credits: user.credits + 100 };
+    const updateUserData = { publicidades: userPublicidades, credits: usuario.credits + 100 };
     await updateModel('users', { _id: usuarioId }, updateUserData);
 
-    updateUserSockets({ ...user, ...updateUserData, jwtToken });
-    // const publicidades = await getModel('publicidades');
+    const publicidades = await getModel('publicidades');
 
-    // const publicidadesNoVistas = publicidades.filter(publicidad => userPublicidades[publicidad._id]);
+    updateUserSockets({ ...usuario, ...updateUserData, jwtToken });
 
-    // const params = {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     publicidades: publicidadesNoVistas,
-    //     usuarioId,
-    //   }),
-    //   headers: { 'Content-Type': 'application/json' },
-    // };
+    const publicidadesNoVistas = publicidades.filter(publicidad => {
+      return !userPublicidades[publicidad._id];
+    });
 
-    // fetch(`${__SOCKETIO_API}/update-data`, params);
+    const params = {
+      method: 'POST',
+      body: JSON.stringify({
+        publicidades: publicidadesNoVistas,
+        usuarioId,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    fetch(`${__SOCKETIO_API}/update-data`, params);
 
   } catch (error) {
     console.error(error);

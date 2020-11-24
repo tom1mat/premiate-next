@@ -93,7 +93,7 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
   const reiniciarPublicidad = async event => {
     event.persist();
     event.preventDefault();
-    const confirm = window.confirm('Seguro que desea reiniciar la publicidad?');
+    const confirm = window.confirm('Seguro que desea reiniciar las publicidades?');
 
     if (confirm) {
       setLoading(true);
@@ -103,12 +103,12 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
       const response = await fetchData(`usuarios/${emailUpdate}`, { resetPublicidad: true }, 'PUT');
       const notif = {
         type: 'info',
-        message: 'La publicidad se ha reiniciado'
+        message: 'Las publicidad se han reiniciado'
       };
 
       if (!response) {
         notif.type = 'warning';
-        notif.message = 'Error, no se pudo reiniciar la publicidad';
+        notif.message = 'Error, no se pudo reiniciar las publicidades';
       }
 
       const { type, message } = notif;
@@ -148,7 +148,7 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
               Eliminar
             </Button>
             <Button value={email} onClick={reiniciarPublicidad} type="primary" disabled={loading} shape="round" icon={<RetweetOutlined />} size="default">
-              Reiniciar publicidad
+              Reiniciar publicidades
             </Button>
           </form>
         ))
