@@ -118,6 +118,10 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
     } else {
       content = <p>Finalizado</p>;
     }
+  } else if(sorteo.status === 'UPCOMING'){
+    content = (
+      <p>Próximamente...</p>
+    );
   } else {
     content = isSuscribed ? <p>Inscripto</p> : <p className="text-muted">Participar</p>;
   }

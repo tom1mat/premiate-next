@@ -5,6 +5,7 @@ const SelectStatus = ({ defaultValue, disabled }) => (
     <option value="ACTIVE">ACTIVE</option>
     <option value="INACTIVE">INACTIVE</option>
     <option value="FINISHED">FINISHED</option>
+    <option value="UPCOMING">UPCOMING</option>
   </select>
 );
 

@@ -79,9 +79,9 @@ const PublicidadPlayer = () => {
         {
           !playing && (
             <div>
-            <button onClick={() => setPlaying(true)}>Ver otra <span>+ 100 credits</span></button>
-            <button onClick={() => setShowPublicidad(false)}>Cerrar</button>
-          </div>
+              <button onClick={() => setPlaying(true)}>Ver otra <span>+ 100 credits</span></button>
+              <button onClick={() => setShowPublicidad(false)}>Cerrar</button>
+            </div>
           )
         }
       </div>

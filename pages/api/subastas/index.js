@@ -56,7 +56,14 @@ const post = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
       const { title, status, dateString } = fields;
 
-      // throw new Error('que solo deje crear una sola subasta activa');
+      if (status === 'ACTIVE') {
+        const subastas = await getModel('subastas');
+
+        const areActiveSubastas = subastas.some(s => s.status === 'ACTIVE');
+        if (areActiveSubastas) {
+          return resolve({ status: 200, data: { isError: true, message: 'Solo puede haber una subasta activa al mismo tiempo' } });
+        }
+      }
 
       const image = files.image.path.split('subastas/')[1];
       const data = {

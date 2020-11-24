@@ -61,7 +61,14 @@ const put = async (req, res) => {
         dateString,
       };
 
-      // throw new Error('que solo deje crear una sola subasta activa');
+      if (status === 'ACTIVE') {
+        const subastas = await getModel('subastas');
+
+        const areActiveSubastas = subastas.some(({ _id, status }) => String(_id) !== id && status === 'ACTIVE');
+        if (areActiveSubastas) {
+          return resolve({ status: 406, data: { } });
+        }
+      }
 
       let image = null;
 

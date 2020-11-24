@@ -231,6 +231,10 @@ const Subasta = ({ subasta }) => {
         }
       </>
     )
+  } else if (subasta.status === 'UPCOMING'){
+    content = (
+      <p>Próximamente...</p>
+    );
   } else {
     content = (
       <>

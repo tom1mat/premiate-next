@@ -72,7 +72,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
 
     const notif = {
       type: 'info',
-      message: `La subasta ${title} se ha editado correctamente`
+      message: `La subasta ${title} se ha editado correctamente`,
     };
 
     if (response.ok) {
@@ -82,7 +82,10 @@ const PageSubastas = ({ subastas: _subastas }) => {
       }
     } else if (response.status === 405) {
       notif.type = 'warning';
-      notif.message = `La fecha debe ser futura`;
+      notif.message = 'La fecha debe ser futura';
+    } else if(response.status === 406){
+      notif.type = 'warning';
+      notif.message = 'Solo puede haber una subasta activa al mismo tiempo';
     } else {
       notif.type = 'warning';
       notif.message = `No se pudo editar la subasta ${title}`;
@@ -111,13 +114,16 @@ const PageSubastas = ({ subastas: _subastas }) => {
 
     const formData = new FormData(event.target);
 
-    const newSubasta = await fetchData('subastas', formData, 'POST', 'formData');
+    const data = await fetchData('subastas', formData, 'POST', 'formData');
     const notif = {
       type: 'info',
       message: `La subasta se ha creado correctamente`
     };
 
-    if (newSubasta) {
+    if (data.isError) {
+      notif.type = 'warning';
+      notif.message = data.message || 'No se pudo crear La subasta';
+    } else {
       const {
         title: { value: title },
         status: { value: status },
@@ -125,13 +131,26 @@ const PageSubastas = ({ subastas: _subastas }) => {
       } = event.target;
       setSubastas([
         ...subastas,
-        { _id: newSubasta._id, title, status, image: newSubasta.image, dateString, }
+        { _id: data._id, title, status, image: data.image, dateString, }
       ]);
       event.target.reset();
-    } else {
-      notif.type = 'warning';
-      notif.message = `No se pudo crear La subasta`;
     }
+
+    // if (newSubasta) {
+    //   const {
+    //     title: { value: title },
+    //     status: { value: status },
+    //     dateString: { value: dateString },
+    //   } = event.target;
+    //   setSubastas([
+    //     ...subastas,
+    //     { _id: newSubasta._id, title, status, image: newSubasta.image, dateString, }
+    //   ]);
+    //   event.target.reset();
+    // } else {
+    //   notif.type = 'warning';
+    //   notif.message = `No se pudo crear La subasta`;
+    // }
 
     const { type, message } = notif;
 
@@ -145,6 +164,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
   const deleteSubasta = async event => {
     event.persist();
     event.preventDefault();
+
     const confirm = window.confirm('Seguro que desea eliminar la subasta?');
 
     if (confirm) {
@@ -158,7 +178,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
         message: `La subasta ha sido eliminado correctamente`
       };
 
-      const form = target.parentNode;
+      const form = target.parentNode.parentNode;
       form.parentNode.removeChild(form);
 
       if (!response) {
