@@ -4,6 +4,7 @@ import { Checkbox, notification } from 'antd';
 import getConfig from 'next/config';
 
 import { Context } from '../context';
+import { isPasswordStrong, validateEmail } from '../../helpers/client';
 
 const { publicRuntimeConfig: { __API_URL } } = getConfig();
 
@@ -97,62 +98,56 @@ class LoginButton extends React.PureComponent {
     }
   }
 
-  onHandleCreateUser = async (ev) => {
-    ev.preventDefault();
+  validateData = () => {
+    let message = null;
+    if (!this.state.name) message = 'Debe ingresar tu nombre';
+    if (!this.state.surname) message = 'Debe ingresar tu apellido';
+    if (!isPasswordStrong(this.state.createPassword)) message = 'La contraseña debe tener 8 caracteres, 1 número y 1 mayúscula';
+    if (!validateEmail(this.state.createEmail)) message = 'Debes ingresar un email válido';
+    if (!this.state.hasAcceptedTerms) message = 'Debe aceptar los términos';
 
-    if (!this.state.name) {
-      return notification.warning({
-        placement: 'bottomRight',
-        message: 'Debe ingresar tu nombre',
-      });
-    } else if (!this.state.surname) {
-      return notification.warning({
-        placement: 'bottomRight',
-        message: 'Debe ingresar tu apellido',
-      });
-    }
-
-    if (this.state.hasAcceptedTerms) {
-      const { createEmail, createPassword, name, surname } = this.state;
-      if (createEmail && createPassword) {
-        this.setState({ loading: true });
-        const body = JSON.stringify({
-          email: this.state.createEmail,
-          password: this.state.createPassword,
-          name,
-          surname,
-        });
-        const res = await fetch(`${__API_URL}/usuarios`, {
-          method: 'POST',
-          body,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (res.status === 200) {
-          const userData = await res.json();
-          this.setCookie(userData.jwtToken);
-          window.location.reload();
-        } else {
-          const { message } = await res.json()
-          notification.warning({
-            placement: 'bottomRight',
-            message,
-          });
-        }
-        this.setState({ loading: false });
-      } else {
-        notification.warning({
-          placement: 'bottomRight',
-          message: 'Debe ingresar un usuario y contraseña',
-        });
-      }
-    } else {
+    if (message) {
       notification.warning({
         placement: 'bottomRight',
-        message: 'Debe aceptar los términos',
+        message,
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  onHandleCreateUser = async (ev) => {
+    ev.preventDefault();
+    if (!this.validateData()) return;
+
+    const { createEmail, createPassword, name, surname } = this.state;
+    this.setState({ loading: true });
+    const body = JSON.stringify({
+      email: createEmail,
+      password: createPassword,
+      name,
+      surname,
+    });
+    const res = await fetch(`${__API_URL}/usuarios`, {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.status === 200) {
+      const userData = await res.json();
+      this.setCookie(userData.jwtToken);
+      window.location.reload();
+    } else {
+      const { message } = await res.json()
+      notification.warning({
+        placement: 'bottomRight',
+        message,
       });
     }
+    this.setState({ loading: false });
   }
 
   onHandleLogin = (ev, auth2) => {
