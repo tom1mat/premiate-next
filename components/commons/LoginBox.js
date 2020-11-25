@@ -99,13 +99,28 @@ class LoginButton extends React.PureComponent {
 
   onHandleCreateUser = async (ev) => {
     ev.preventDefault();
+
+    if (!this.state.name) {
+      return notification.warning({
+        placement: 'bottomRight',
+        message: 'Debe ingresar tu nombre',
+      });
+    } else if (!this.state.surname) {
+      return notification.warning({
+        placement: 'bottomRight',
+        message: 'Debe ingresar tu apellido',
+      });
+    }
+
     if (this.state.hasAcceptedTerms) {
-      const { createEmail, createPassword } = this.state;
+      const { createEmail, createPassword, name, surname } = this.state;
       if (createEmail && createPassword) {
         this.setState({ loading: true });
         const body = JSON.stringify({
           email: this.state.createEmail,
           password: this.state.createPassword,
+          name,
+          surname,
         });
         const res = await fetch(`${__API_URL}/usuarios`, {
           method: 'POST',
@@ -181,6 +196,14 @@ class LoginButton extends React.PureComponent {
     this.setState({ hasAcceptedTerms: ev.target.checked });
   }
 
+  onHandleChangeName = (ev) => {
+    this.setState({ name: ev.target.value });
+  }
+
+  onHandleChangeSurName = (ev) => {
+    this.setState({ surname: ev.target.value });
+  }
+
   render() {
     return (
       <Context.Consumer>
@@ -202,11 +225,13 @@ class LoginButton extends React.PureComponent {
                   <div className="nav-item dropdown">
                     <button className="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       Crear cuenta
-                      </button>
+                    </button>
                     <div className="dropdown-menu login-box" aria-labelledby="navbarDropdown">
                       <button className="nav-link js-scroll-trigger text-gray" disabled={!auth2} onClick={(ev) => this.onHandleCreateUserFromGoogle(ev, auth2)}>Crear desde <i className="fab fa-google"></i></button>
                       <div className="dropdown-divider"></div>
                       <form>
+                        <input className="login-input" type="text" placeholder="Nombre" onChange={this.onHandleChangeName} />
+                        <input className="login-input" type="text" placeholder="Apellido" onChange={this.onHandleChangeSurName} />
                         <input className="login-input" type="text" placeholder="Email" onChange={this.onHandleChangeCreateEmail} />
                         <input className="login-input" type="password" placeholder="Contraseña" onChange={this.onHandleChangeCreatePassword} />
                         <Checkbox onChange={this.onHandleTermsChange}>

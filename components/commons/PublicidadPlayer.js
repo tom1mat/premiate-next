@@ -20,7 +20,7 @@ const PublicidadPlayer = () => {
 
   useEffect(() => {
     setPlaying(showPublicidad);
-    if (!usuario) {
+    if (showPublicidad && !usuario) {
       notification.info({
         placement: 'bottomRight',
         duration: 10,

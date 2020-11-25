@@ -11,7 +11,8 @@ const {
   },
   getJwtToken,
   isAdmin,
-  generateHash
+  generateHash,
+  isPasswordStrong,
 } = require('../../../helpers/server');
 
 const { publicRuntimeConfig: { __STARTINGCREDITS } } = getConfig();
@@ -82,6 +83,9 @@ const post = async (req, res) => {
       return res.status(400).json({ message: 'Error, no se pudo crear el usuario' });
     }
   } else {
+    if (!isPasswordStrong(password)) {
+      return res.status(400).json({ message: 'La contraseña debe tener 8 caracteres, 1 número y 1 mayúscula' });
+    }
     if (await userExists(email)) {
       return res.status(400).json({ message: `Ya hay un usuario creado con ${email}` });
     }
@@ -92,7 +96,8 @@ const post = async (req, res) => {
       email,
       password: hash,
       credits: __STARTINGCREDITS,
-      name: email.split('@')[0],
+      name,
+      surname,
     }
 
     if (createModel('users', data)) {

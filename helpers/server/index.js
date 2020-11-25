@@ -94,6 +94,11 @@ const updateUserSockets = (data) => {
   fetch(`${__SOCKETIO_API}/update-data`, params);
 }
 
+const isPasswordStrong = (password) => {
+  const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+  return re.test(String(password));
+}
+
 module.exports = {
   dbModels: {
     getModelFromString,
@@ -111,4 +116,5 @@ module.exports = {
   setCookie,
   isAdmin,
   updateUserSockets,
+  isPasswordStrong,
 };

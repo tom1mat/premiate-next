@@ -127,11 +127,11 @@ const PageUsuarios = ({ usuarios: _usuarios }) => {
         usuarios.map(({ _id, name, email, surname, avatar, credits }) => (
           <form key={_id} onSubmit={updateUsuario} method="POST">
             {avatar && <img width="50" height="50" alt="usuario" src={avatar} />}
-            <input required placeholder="Email" defaultValue={email} type="text" name="email" />
-            <input placeholder="Nombre" defaultValue={name} type="text" name="name" />
+            <input required placeholder="Email" defaultValue={email} type="email" name="email" />
+            <input required placeholder="Nombre" defaultValue={name} type="text" name="name" />
             <input placeholder="Contraseña" type="password" name="password" />
-            <input placeholder="Apellido" defaultValue={surname} type="text" name="surname" />
-            <input placeholder="Credits" defaultValue={credits} type="number" name="credits" />
+            <input required placeholder="Apellido" defaultValue={surname} type="text" name="surname" />
+            <input required placeholder="Credits" defaultValue={credits} type="number" name="credits" />
             <input type="hidden" value={email} name="emailUpdate" />
             <Button
               htmlType="submit"
