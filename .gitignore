@@ -4,6 +4,7 @@
 nginxfiles/imagenes/sorteos/*
 nginxfiles/imagenes/subastas/*
 nginxfiles/videos/*
+nginxfiles/archivos/*
 
 # dependencies
 /node_modules
