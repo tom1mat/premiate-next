@@ -3,3 +3,19 @@
     width: 100px;
   }
 }
+
+@media (max-width: 600px) {
+  .sonrisa {
+    width: 300px !important;
+  }
+
+  header.masthead .intro-text .intro-heading {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sonrisa {
+    width: 150px !important;
+  }
+}

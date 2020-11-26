@@ -208,12 +208,16 @@ class LoginButton extends React.PureComponent {
 
             return usuario ? (
               <>
-                {
-                  <span className="nav-link">Hola {usuario.email}!</span>
-                }
-                <div className="nav-link credits-container"><i className="fas fa-money-bill-wave"></i>{usuario.credits}</div>
-                <a href="/perfil" className="nav-link js-scroll-trigger">Mi perfil</a>
-                <a className={`nav-link js-scroll-trigger ${!auth2 ? 'nav-link--disabled' : ''}`} onClick={() => this.onHandleLogOut(auth2)} href="#contact">LOG OUT</a>
+                <div className="nav-item dropdown">
+                  <button className="nav-link dropdown-toggle" id="dropdown-logged" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Hola {usuario.name || usuario.email.split('@')[0]}!
+                  </button>
+                  <div className="dropdown-menu dropdown-logged" aria-labelledby="dropdown-logged">
+                    <div className="nav-link credits-container"><i className="fas fa-money-bill-wave" style={{ color: '#d6d643' }}></i>{usuario.credits}</div>
+                    <a href="/perfil" className="nav-link js-scroll-trigger">Mi perfil</a>
+                    <a className={`nav-link js-scroll-trigger ${!auth2 ? 'nav-link--disabled' : ''}`} onClick={() => this.onHandleLogOut(auth2)} href="#contact">Salir</a>
+                  </div>
+                </div>
               </>
             ) : (
                 <>

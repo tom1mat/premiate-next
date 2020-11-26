@@ -20,13 +20,7 @@ const PublicidadPlayer = () => {
 
   useEffect(() => {
     setPlaying(showPublicidad);
-    if (showPublicidad && !usuario) {
-      notification.info({
-        placement: 'bottomRight',
-        duration: 10,
-        message: 'Debes ingresar primero!',
-      });
-    } else if (!current && showPublicidad) {
+    if (!current && showPublicidad) {
       notification.info({
         placement: 'bottomRight',
         duration: 10,

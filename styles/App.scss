@@ -112,6 +112,14 @@ code {
   margin-left: -120px;
 }
 
+.dropdown-logged {
+  div,
+  a {
+    color: gray;
+  }
+  margin-left: -40px;
+}
+
 .profile-form{
   margin: auto;
 }
@@ -128,7 +136,7 @@ code {
 }
 
 .sonrisa {
-  width: 75%;
+  width: 500px;
 }
 
 .nav-link:active {

@@ -8,8 +8,9 @@ import LoginBox from './../commons/LoginBox';
 
 export default () => {
   const [isSmallResolution, setIsSmallResolution] = useState(false);
-  const { setShowPublicidad, publicidades } = useContext(Context);
+  const { setShowPublicidad, publicidades, usuario } = useContext(Context);
   useEffect(() => {
+    console.log('window.screen.width: ', window.screen.width)
     if (window.screen.width < 992) setIsSmallResolution(true);
   }, []);
   return (
@@ -45,7 +46,13 @@ export default () => {
       <button
         className="ver-publicidad"
         onClick={() => {
-          if (!publicidades || publicidades.length === 0) {
+          if (!usuario) {
+            notification.info({
+              placement: 'bottomRight',
+              duration: 10,
+              message: 'Debes ingresar primero!',
+            });
+          } else if (!publicidades || publicidades.length === 0) {
             notification.info({
               placement: 'bottomRight',
               duration: 10,
