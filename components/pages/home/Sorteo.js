@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import getConfig from 'next/config';
-import { notification, Modal, Card } from 'antd';
+import { notification, Button, Card } from 'antd';
 
 import { Context } from '../../context';
 
@@ -8,7 +8,6 @@ const { publicRuntimeConfig: { __API_URL, __IMAGENES_PUBLIC_PATH } } = getConfig
 
 const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   const { usuario } = useContext(Context);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuscribed, setIsSuscribed] = useState(_isSuscribed);
 
@@ -44,6 +43,7 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   }
 
   const onUnSuscribe = async () => {
+    setIsLoading(true);
     const body = JSON.stringify({
       jwtToken: usuario.jwtToken,
       sorteoId: sorteo._id,
@@ -70,39 +70,8 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
         message: 'No te has podido desubscribir en este momento, inténtalo de nuevo más tarde',
       });
     }
-  }
 
-  const handleClick = (ev) => {
-    ev.preventDefault();
-    setIsModalVisible(true);
-  }
-
-  const handleCancel = (ev) => {
-    ev.preventDefault();
-    setIsModalVisible(false);
-  }
-
-  let action;
-
-  if (!usuario) action = <p className="text-center">Debes ingresar para participar!</p>;
-
-  if (isLoading) {
-    action = (
-      <button disabled className="btn btn-primary" type="button" onClick={onUnSuscribe}>
-        CARGANDO...
-      </button>
-    );
-  } else {
-    action = isSuscribed ? (
-      <button className="btn btn-primary" type="button" onClick={onUnSuscribe}>
-        <i className="fas fa-times"></i>
-          Desinscribirse
-      </button>
-    ) : (
-        <button className="btn btn-primary" type="button" onClick={onSuscribe}>
-          Inscribirse
-        </button>
-      );
+    setIsLoading(false);
   }
 
   let content = null;
@@ -112,46 +81,53 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
       content = (
         <>
           <p>Finalizado</p>
-          <p>{`Ganador ${sorteo.ganador.email.split('@')[0]}`}</p>
+          <p>{`Ganador ${sorteo.ganador.name}`}</p>
         </>
       );
     } else {
       content = <p>Finalizado</p>;
     }
-  } else if(sorteo.status === 'UPCOMING'){
+  } else if (sorteo.status === 'UPCOMING') {
     content = (
       <p>Próximamente...</p>
     );
   } else {
-    content = isSuscribed ? <p>Inscripto</p> : <p className="text-muted">Participar</p>;
+    let action;
+
+    if (!usuario) action = <p className="text-center">Debes ingresar para participar!</p>;
+
+    if (isLoading) {
+      action = (
+        <Button disabled type="button" onClick={onUnSuscribe}>
+          CARGANDO...
+        </Button>
+      );
+    } else {
+      action = isSuscribed ? (
+        <Button type="button" onClick={onUnSuscribe}>
+          <i className="fas fa-times"></i>
+            Desinscribirse
+        </Button>
+      ) : (
+          <Button type="button" onClick={onSuscribe}>
+            Inscribirse
+          </Button>
+        );
+    }
+
+    content = action;
   }
 
   return (
-    <>
-      <Modal
-        title={sorteo.titulo}
-        visible={isModalVisible}
-        centered
-        onCancel={handleCancel}
-        footer={null}
-      >
-        <img className="img-fluid d-block mx-auto img-sorteo" src="img/portfolio/01-full.jpg" alt="" />
-        {action}
-      </Modal>
-      <Card
-        hoverable
-        style={{ width: 240 }}
-        className="portfolio-item card-sorteo"
-        cover={<img alt="parlante" width="240" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${sorteo.image}`} />}
-        title={sorteo.sorteo}
-        onClick={!sorteo.ganador ? handleClick : null}
-      >
-        <div className="portfolio-caption">
-          <h4>{sorteo.sorteo}</h4>
-          {content}
-        </div>
-      </Card>
-    </>
+    <Card
+      hoverable
+      style={{ width: 240 }}
+      className="portfolio-item card-sorteo"
+      cover={<img alt="parlante" width="240" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${sorteo.image}`} />}
+      title={sorteo.sorteo}
+    >
+      {content}
+    </Card>
   );
 }
 

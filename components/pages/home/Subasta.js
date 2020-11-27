@@ -226,7 +226,7 @@ const Subasta = ({ subasta }) => {
         <p>Finalizada</p>
         {
           subasta.ganador && (
-            <p>{`Ganador ${subasta.ganador.email.split('@')[0]}`}</p>
+            <p>{`Ganador ${subasta.ganador.name}`}</p>
           )
         }
       </>
