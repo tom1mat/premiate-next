@@ -10,7 +10,7 @@ const Subastas = ({ subastas }) => {
           <div className="row">
             <div className="col-lg-12 text-center">
               <h2 className="section-heading text-uppercase">Subastas</h2>
-              <h3 className="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+              <p className="section-subheading text-muted">¿Cuántas monedas estás dispuesto a invertir para ganar eso que tanto querés? <br />Subí la apuesta y esperá el premio en casa...</p>
             </div>
           </div>
           <div className="row cards-container">

@@ -12,7 +12,7 @@ const Sorteos = ({ usuario, sorteos }) => {
         <div className="row">
           <div className="col-lg-12 text-center">
             <h2 className="section-heading text-uppercase">Sorteos</h2>
-            <h3 className="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+            <p className="section-subheading text-muted">¿Cuántos requisitos tenés que cumplir para participar de un sorteo en redes? <br />Elegí tu premio y participá con un solo click..</p>
           </div>
         </div>
         <div className="row cards-container">
