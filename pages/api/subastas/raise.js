@@ -41,16 +41,19 @@ export default async (req, res) => {
       if (subasta.ganador._id === user._id) {
         return res.status(400).send(userData);
       }
-      const ganadorViejoId = subasta.ganador._id;
-      const ganadorViejo = await getModel('users', { _id: ganadorViejoId });
-      const newSubastas = ganadorViejo.subastas ? { ...ganadorViejo.subastas } : { };
-      delete newSubastas[subastaId];
 
-      const credits = ganadorViejo.credits + subasta.amount;
-      const ganadorViejoData = { subastas: newSubastas, credits: credits < 0 ? 0 : credits };
-      await updateModel('users', { _id: ganadorViejoId }, ganadorViejoData );
+      if (subasta.ganador) {
+        const ganadorViejoId = subasta.ganador._id;
+        const ganadorViejo = await getModel('users', { _id: ganadorViejoId });
+        const newSubastas = ganadorViejo.subastas ? { ...ganadorViejo.subastas } : { };
+        delete newSubastas[subastaId];
 
-      updateUserSockets({ ...ganadorViejo, ...ganadorViejoData, jwtToken });
+        const credits = ganadorViejo.credits + subasta.amount;
+        const ganadorViejoData = { subastas: newSubastas, credits: credits < 0 ? 0 : credits };
+        await updateModel('users', { _id: ganadorViejoId }, ganadorViejoData );
+
+        updateUserSockets({ ...ganadorViejo, ...ganadorViejoData, jwtToken });
+      }
     }
     // 2) Actualizar la subasta
     await updateModel('subastas', { _id: subastaId }, { amount, ganador: user });
