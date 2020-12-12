@@ -71,13 +71,14 @@ const post = async (req, res) => {
     if (await createModel('users', data)) {
       const admin = isAdmin(email);
       const jwtToken = await getJwtToken({ email, isAdmin: admin });
+      const userData = await getModel('users', { email });
 
       res.status(200).json({
-        ...data,
+        ...userData,
         jwtToken,
-        email: data.email,
-        credits: data.credits,
-        googleData: data.googleData,
+        // email: data.email,
+        // credits: data.credits,
+        // googleData: data.googleData,
       });
     } else {
       return res.status(400).json({ message: 'Error, no se pudo crear el usuario' });

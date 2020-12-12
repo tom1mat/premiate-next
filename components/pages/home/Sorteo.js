@@ -12,6 +12,13 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   const [isSuscribed, setIsSuscribed] = useState(_isSuscribed);
 
   const onSuscribe = async () => {
+    if (!usuario) {
+      notification.warning({
+        placement: 'bottomRight',
+        message: 'Debes ingresar para participar!',
+      });
+      return;
+    }
     setIsLoading(true);
     const body = JSON.stringify({
       jwtToken: usuario.jwtToken,
@@ -43,6 +50,13 @@ const Sorteo = ({ sorteo, isSuscribed: _isSuscribed }) => {
   }
 
   const onUnSuscribe = async () => {
+    if (!usuario) {
+      notification.warning({
+        placement: 'bottomRight',
+        message: 'Debes ingresar para participar!',
+      });
+      return;
+    }
     setIsLoading(true);
     const body = JSON.stringify({
       jwtToken: usuario.jwtToken,

@@ -145,7 +145,6 @@ const Subasta = ({ subasta }) => {
         placement: 'bottomRight',
         message: 'Debes ingresar para poder subir una apuesta!',
       });
-      window.scrollTo(0, 0);
       return;
     }
 
