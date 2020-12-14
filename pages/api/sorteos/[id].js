@@ -133,5 +133,21 @@ const _delete = async (req, res) => {
     responseStatus = 500;
   }
 
+  try {
+    const sorteos = await getModel('sorteos');
+
+    const params = {
+      method: 'POST',
+      body: JSON.stringify({
+        sorteos: sorteos.filter(sorteo => sorteo.status !== 'INACTIVE'),
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+
+    fetch(`${__SOCKETIO_API}/update-data`, params);
+  } catch (error) {
+    console.error(error);
+  }
+
   return res.status(responseStatus).send({});
 }
