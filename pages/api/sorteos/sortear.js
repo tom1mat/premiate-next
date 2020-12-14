@@ -54,7 +54,7 @@ export default async (req, res) => {
 
   if (ganador.email === 'admin@premiate.ar') {
     return res.status(200).json({
-      type: 'success',
+      type: 'error',
       message: 'Error, el ganador no puede ser el admin! Intenta de nuevo',
       usuarioGanador: ganador,
     });
