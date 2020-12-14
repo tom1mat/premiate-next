@@ -41,6 +41,10 @@ code {
   color: white;
 }
 
+main {
+  min-height: auto !important;
+}
+
 .App-link {
   color: #09d3ac;
 }
@@ -332,6 +336,10 @@ code {
   grid-template-columns: 1fr 2fr 1fr 1fr 1fr fit-content(100%);
   padding: 3% 1%;
   border-bottom: 1px solid gray;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &:first-of-type {
     border-top: 1px solid gray;

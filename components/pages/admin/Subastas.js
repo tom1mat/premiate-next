@@ -83,7 +83,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
     } else if (response.status === 405) {
       notif.type = 'warning';
       notif.message = 'La fecha debe ser futura';
-    } else if(response.status === 406){
+    } else if (response.status === 406) {
       notif.type = 'warning';
       notif.message = 'Solo puede haber una subasta activa al mismo tiempo';
     } else {
@@ -246,6 +246,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
         </form>
       </div>
       <div>
+        <div style={{ fontSize: 18 }}>Subastas ingresadas</div>
         {
           subastas.map(({ _id, title, dateString, image, status, ganador }) => {
             const isFinished = status === 'FINISHED';
@@ -269,16 +270,16 @@ const PageSubastas = ({ subastas: _subastas }) => {
                     >
                       Editar
                   </Button>
-                  <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
-                    Eliminar
+                    <Button value={_id} onClick={deleteSubasta} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
+                      Eliminar
                   </Button>
-                  <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={isFinished || loading} shape="round" icon={<GiftOutlined />} size="default">
-                    Finalizar
+                    <Button value={_id} onClick={finalizarSubasta} type="primary" disabled={isFinished || loading} shape="round" icon={<GiftOutlined />} size="default">
+                      Finalizar
                   </Button>
                   </div>
                   <input type="hidden" value={_id} name="_id" />
                   {
-                    ganador && (
+                    ganador && ['ACTIVE', 'FINISHED'].includes(status) && (
                       <div>Ganador: {ganador.email}</div>
                     )
                   }

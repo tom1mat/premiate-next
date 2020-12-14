@@ -202,58 +202,60 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
         </form>
       </div>
       <div>
-        <div style={{ fontSize: 18, marginLeft: '10%' }}>Sorteos ingresados</div>
+        <div style={{ fontSize: 18 }}>Sorteos ingresados</div>
         {
           sorteos.map(({ _id, sorteo, image, status, users, ganador }) => {
             const isFinished = status === 'FINISHED';
             return (
-            <form key={_id} className="sorteos-grid" key={_id} onSubmit={updateSorteo} method="POST">
-              {image && <img width="50" height="50" alt="sorteo" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${image}`} />}
-              <Input disabled={isFinished} style={{ height: 32 }} defaultValue={sorteo} name="sorteo" required placeholder="Nombre del sorteo" />
-              {/* <input defaultValue={sorteo} name="sorteo" required /> */}
-              <SelectStatus disabled={isFinished} defaultValue={status} />
-              <input type="hidden" value={_id} name="_id" />
-              <input disabled={isFinished} type="file" name="image" />
-              <div className="button-container">
-                <Button
-                  htmlType="submit"
-                  type="primary"
-                  disabled={loading || isFinished}
-                  shape="round"
-                  icon={<EditOutlined />}
-                  size="default"
-                  className="button-edit"
-                >
-                  Editar
+              <form key={_id} className="sorteos-grid" key={_id} onSubmit={updateSorteo} method="POST">
+                {image && <img width="50" height="50" alt="sorteo" src={`${__IMAGENES_PUBLIC_PATH}sorteos/${image}`} />}
+                <Input disabled={isFinished} style={{ height: 32 }} defaultValue={sorteo} name="sorteo" required placeholder="Nombre del sorteo" />
+                {/* <input defaultValue={sorteo} name="sorteo" required /> */}
+                <SelectStatus disabled={isFinished} defaultValue={status} />
+                <input type="hidden" value={_id} name="_id" />
+                <input disabled={isFinished} type="file" name="image" />
+                <div className="button-container">
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={loading || isFinished}
+                    shape="round"
+                    icon={<EditOutlined />}
+                    size="default"
+                    className="button-edit"
+                  >
+                    Editar
                 </Button>
-                <Button value={_id} onClick={deleteSorteo} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
-                  Eliminar
+                  <Button value={_id} onClick={deleteSorteo} type="primary" disabled={loading} shape="round" icon={<DeleteOutlined />} danger size="default">
+                    Eliminar
                   </Button>
-                <Button value={_id} onClick={sortear} type="primary" disabled={isFinished || loading} shape="round" icon={<GiftOutlined />} size="default">
-                  Sortear
+                  <Button value={_id} onClick={sortear} type="primary" disabled={isFinished || loading} shape="round" icon={<GiftOutlined />} size="default">
+                    Sortear
                 </Button>
-              </div>
-              {
-                ganador ? (
-                  <div>Ganador: {ganador.email}</div>
-                ) : (
-                    users && (
-                      <div>
-                        <div>Participantes</div>
-                        <ul>
-                          {
-                            Object.values(users).map(user => (
-                              <li key={user._id}>{user.email}</li>
-                            ))
-                          }
-                        </ul>
-                      </div>
-                    )
+                </div>
+                {
+                  ['ACTIVE', 'FINISHED'].includes(status) && (
+                    ganador ? (
+                      <div>Ganador: {ganador.email}</div>
+                    ) : (
+                        users && (
+                          <div>
+                            <div>Participantes</div>
+                            <ul>
+                              {
+                                Object.values(users).map(user => (
+                                  <li key={user._id}>{user.email}</li>
+                                ))
+                              }
+                            </ul>
+                          </div>
+                        )
+                      )
                   )
-              }
-            </form>
-          )
-            })
+                }
+              </form>
+            )
+          })
         }
       </div>
     </>
