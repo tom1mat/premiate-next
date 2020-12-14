@@ -4,7 +4,7 @@ import useDb from '../../../middlewares/useDb';
 import useSocketIo from '../../../middlewares/useSocketIo';
 import useProtected from '../../../middlewares/useProtected';
 
-const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH } } = getConfig();
+const { publicRuntimeConfig: { __IMAGENES_UPLOAD_PATH, __SOCKETIO_API } } = getConfig();
 
 const {
   dbModels: {
@@ -81,6 +81,18 @@ const post = async (req, res) => {
       resolve({ status: statusResponse, data: newSorteo });
     });
   });
+
+  const sorteosUpdated = await getModel('sorteos');
+
+  const params = {
+    method: 'POST',
+    body: JSON.stringify({
+      sorteos: sorteosUpdated.filter(sorteo => sorteo.status !== 'INACTIVE'),
+    }),
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  fetch(`${__SOCKETIO_API}/update-data`, params);
 
   return res.status(status).send(data);
 }
