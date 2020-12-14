@@ -20,7 +20,7 @@ export default () => <footer className="footer">
           <li className="list-inline-item">
             <a target="_blank" href="politicas.html">Políticas de privacidad</a>
             <span style={{ margin: '0 15px' }}>|</span>
-            <a href="/archivos/app-premiate-android-1.0.4.apk" download="app-premiate-android-1.0.4.apk">Descargar app</a>
+            <a href="/archivos/app-premiate-android-1.0.6.apk" download="app-premiate-android-1.0.6.apk">Descargar app</a>
             <img style={{ width: 25, marginLeft: 10 }} src="/img/logo_android.png" />
           </li>
         </ul>
