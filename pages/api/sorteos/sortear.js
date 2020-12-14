@@ -52,6 +52,14 @@ export default async (req, res) => {
 
   const ganador = getRandomUser(sorteo.users);
 
+  if (ganador.email === 'admin@premiate.ar') {
+    return res.status(200).json({
+      type: 'success',
+      message: 'Error, el ganador no puede ser el admin! Intenta de nuevo',
+      usuarioGanador: ganador,
+    });
+  }
+
   let sorteosGanador = { };
   if (ganador.sorteos) {
     Object.keys(ganador.sorteos).forEach(sorteoIdKey => {

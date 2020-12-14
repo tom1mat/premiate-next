@@ -26,7 +26,6 @@ export default async (req, res) => {
     const sorteos = user.sorteos || {};
     const sorteo = await getModel('sorteos', { _id: sorteoId });
 
-    console.log('sorteoId: ', sorteoId);
     sorteos[sorteoId] = sorteo;
 
     await updateModel('users', { email }, { sorteos });
@@ -34,7 +33,7 @@ export default async (req, res) => {
     const sorteoUsersUpdate = sorteos.users || { };
     sorteoUsersUpdate[user._id] = user;
 
-    const response = await updateModel('sorteos', { _id: sorteoId }, { users: sorteoUsersUpdate });
+    await updateModel('sorteos', { _id: sorteoId }, { users: sorteoUsersUpdate });
 
     res.status(200).end();
   } catch (error) {
