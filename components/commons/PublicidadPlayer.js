@@ -1,7 +1,7 @@
 import getConfig from 'next/config';
 import React, { useEffect, useState, useContext } from 'react';
 import ReactPlayer from 'react-player/file';
-import { notification } from 'antd';
+import { notification, Button } from 'antd';
 
 import { Context } from '../context';
 import { useFetchData } from '../../helpers/client';
@@ -79,8 +79,25 @@ const PublicidadPlayer = () => {
         {
           !playing && (
             <div>
-              <button onClick={() => setPlaying(true)}>Ver otra <span>+ 100 credits</span></button>
-              <button onClick={() => setShowPublicidad(false)}>Cerrar</button>
+              <Button
+                onClick={() => setPlaying(true)}
+                type="primary"
+                shape="round"
+                size="default"
+              >
+                Ver otra <span>+ 100 credits</span>
+              </Button>
+              <Button
+                onClick={() => setShowPublicidad(false)}
+                type="primary"
+                shape="round"
+                size="default"
+                danger
+              >
+                Cerrar
+              </Button>
+              {/* <button onClick={() => setPlaying(true)}>Ver otra <span>+ 100 credits</span></button>
+              <button onClick={() => setShowPublicidad(false)}>Cerrar</button> */}
             </div>
           )
         }
