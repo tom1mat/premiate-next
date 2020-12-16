@@ -49,7 +49,9 @@ const put = async (req, res) => {
 
   const { name, surname, email, credits, password, resetPublicidad } = req.body;
 
-  let data = { name, surname, email, credits };
+  let data = { name, surname, email };
+
+  if (credits) data.credits = credits;
 
   if (password) {
     const hash = await generateHash(password, bcrypt);
