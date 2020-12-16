@@ -30,7 +30,7 @@ export default async (req, res) => {
 
     await updateModel('users', { email }, { sorteos });
 
-    const sorteoUsersUpdate = sorteos.users || { };
+    const sorteoUsersUpdate = sorteo.users || { };
     sorteoUsersUpdate[user._id] = user;
 
     await updateModel('sorteos', { _id: sorteoId }, { users: sorteoUsersUpdate });

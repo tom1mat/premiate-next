@@ -280,7 +280,7 @@ const PageSubastas = ({ subastas: _subastas }) => {
                   <input type="hidden" value={_id} name="_id" />
                   {
                     ganador && ['ACTIVE', 'FINISHED'].includes(status) && (
-                      <div>Ganador: {ganador.email}</div>
+                    <div>{status === 'ACTIVE' ? 'Va ganando' : 'Ganador'}: {ganador.email}</div>
                     )
                   }
                 </form>
