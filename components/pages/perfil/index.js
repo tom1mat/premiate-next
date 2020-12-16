@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 
 import Navbar from '../../commons/Navbar';
 import Footer from '../../commons/Footer';
+import PublicidadPlayer from '../../commons/PublicidadPlayer';
 import Form from './Form';
 
 const PageAdmin = () => {
@@ -30,6 +31,7 @@ const PageAdmin = () => {
         </div>
       </section>
       <Footer />
+      <PublicidadPlayer />
     </>
   );
 }
