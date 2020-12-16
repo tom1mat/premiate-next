@@ -238,19 +238,8 @@ const PageSorteos = ({ sorteos: _sorteos }) => {
                     ganador ? (
                       <div>Ganador: {ganador.email}</div>
                     ) : (
-                        users && (
-                          <div>
-                            <div>Participantes</div>
-                            <ul>
-                              {
-                                Object.values(users).map(user => (
-                                  <li key={user._id}>{user.email}</li>
-                                ))
-                              }
-                            </ul>
-                          </div>
-                        )
-                      )
+                      <div>Participantes: {users ? Object.keys(users).length : 0}</div>
+                    )
                   )
                 }
               </form>
